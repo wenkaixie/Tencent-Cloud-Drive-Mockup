@@ -3,9 +3,6 @@
   "installCommand": "pnpm install",
   "outputDirectory": "dist",
   "nodeVersion": "22.11.0",
-  "rewrites": [
-    { "source": "/*", "destination": "/index.html" }
-  ],
   "headers": [
     {
       "source": "/assets/*",
