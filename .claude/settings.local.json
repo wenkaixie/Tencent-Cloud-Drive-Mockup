@@ -10,7 +10,8 @@
       "WebSearch",
       "WebFetch(domain:edgeone.ai)",
       "WebFetch(domain:pre-pages.edgeone.ai)",
-      "Bash(pnpm build *)"
+      "Bash(pnpm build *)",
+      "Bash(pnpm install *)"
     ]
   }
 }
