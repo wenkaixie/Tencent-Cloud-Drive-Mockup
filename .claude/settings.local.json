@@ -5,7 +5,12 @@
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(npm run *)",
       "Skill(update-config)",
-      "Bash(npx --package=typescript tsc --noEmit --project tsconfig.json)"
+      "Bash(npx --package=typescript tsc --noEmit --project tsconfig.json)",
+      "WebFetch(domain:pages.edgeone.ai)",
+      "WebSearch",
+      "WebFetch(domain:edgeone.ai)",
+      "WebFetch(domain:pre-pages.edgeone.ai)",
+      "Bash(pnpm build *)"
     ]
   }
 }

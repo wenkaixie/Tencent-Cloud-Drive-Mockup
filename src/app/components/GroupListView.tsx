@@ -160,6 +160,18 @@ const TEMPLATES = [
 // Stable UUID for the one group shared between all roles
 const ENGLISH_3A_ID = '3f7e4567-e89b-12d3-a456-426614174000';
 
+// A group is "shared" (visible to both teacher & student) if:
+// 1. It's the hardcoded English 3A group, OR
+// 2. It has members from BOTH roles (teacher added a student, or vice versa)
+const TEACHER_USERNAME = 'xiewenkai';
+const STUDENT_USERNAME = 'wangyifei';
+function isGroupShared(group: Group): boolean {
+  if (group.id === ENGLISH_3A_ID) return true;
+  const hasTeacher = group.members.some(m => m.username === TEACHER_USERNAME);
+  const hasStudent = group.members.some(m => m.username === STUDENT_USERNAME);
+  return hasTeacher && hasStudent;
+}
+
 function slugify(name: string) {
   return (
     name
@@ -291,7 +303,6 @@ export function GroupListView() {
   const [pendingTags, setPendingTags] = useState<string[]>([]);
 
   const [groups, setGroups] = useState<Group[]>(() => {
-    const SHARED_IDS = new Set([ENGLISH_3A_ID]);
     const DEFAULT_MEMBERS: GroupMember[] = [
       { username: 'xiewenkai', email: 'xiewenkai@tencentschool.com', role: 'Editor', isOwner: true, avatarColor: 'bg-blue-500' },
       { username: 'wangyifei', email: 'wangyifei@tencentschool.com', role: 'Student', avatarColor: 'bg-orange-400' },
@@ -307,36 +318,34 @@ export function GroupListView() {
       { username: 'linzixuan', email: 'linzixuan@tencentschool.com', role: 'Student', avatarColor: 'bg-teal-500' },
     ];
 
-    // Load shared groups (only SHARED_IDS — visible to all roles)
+    // Load shared groups (visible to all roles — contains groups with cross-role members)
     let sharedGroups: Group[] = [];
     try {
       const saved = localStorage.getItem('shared:groups');
       const parsed = saved ? JSON.parse(saved) : null;
       if (Array.isArray(parsed)) {
-        sharedGroups = parsed
-          .filter((g: Group) => SHARED_IDS.has(g.id))
-          .map((g: Group & { members?: GroupMember[] }) => ({
-            ...g,
-            // Always use DEFAULT_MEMBERS for the English 3A demo group to keep profiles fixed
-            members: g.id === ENGLISH_3A_ID ? DEFAULT_MEMBERS : (
-              Array.isArray(g.members) && g.members.length > 0
-                ? normalizeDemoMemberRoles(g.members)
-                : DEFAULT_MEMBERS
-            ),
-          }));
+        sharedGroups = parsed.map((g: Group & { members?: GroupMember[] }) => ({
+          ...g,
+          // Always use DEFAULT_MEMBERS for the English 3A demo group to keep profiles fixed
+          members: g.id === ENGLISH_3A_ID ? DEFAULT_MEMBERS : (
+            Array.isArray(g.members) && g.members.length > 0
+              ? normalizeDemoMemberRoles(g.members)
+              : g.members || []
+          ),
+        }));
       }
     } catch {}
     if (!sharedGroups.some(g => g.id === ENGLISH_3A_ID)) {
       sharedGroups.push({ id: ENGLISH_3A_ID, name: 'English 3A (Student)', createdAt: '2024-01-01 00:00:00', tags: [], members: DEFAULT_MEMBERS });
     }
 
-    // Load role-private groups (only for this role, never includes SHARED_IDS)
+    // Load role-private groups (only for this role — groups without cross-role members)
     let privateGroups: Group[] = [];
     try {
       const saved = localStorage.getItem(storageKey('groups'));
       const parsed = saved ? JSON.parse(saved) : null;
       if (Array.isArray(parsed)) {
-        privateGroups = parsed.filter((g: Group) => !SHARED_IDS.has(g.id));
+        privateGroups = parsed;
       }
     } catch {}
 
@@ -344,9 +353,13 @@ export function GroupListView() {
   });
 
   useEffect(() => {
-    const SHARED_IDS = new Set([ENGLISH_3A_ID]);
-    localStorage.setItem('shared:groups', JSON.stringify(groups.filter(g => SHARED_IDS.has(g.id))));
-    localStorage.setItem(storageKey('groups'), JSON.stringify(groups.filter(g => !SHARED_IDS.has(g.id))));
+    const sharedGroups = groups.filter(g => isGroupShared(g));
+    const privateGroups = groups.filter(g => !isGroupShared(g));
+    // Guard: never wipe shared:groups to empty — the English 3A seed must always persist
+    if (sharedGroups.length > 0) {
+      localStorage.setItem('shared:groups', JSON.stringify(sharedGroups));
+    }
+    localStorage.setItem(storageKey('groups'), JSON.stringify(privateGroups));
   }, [groups, storageKey]);
 
   // Determine the current user
@@ -396,9 +409,10 @@ export function GroupListView() {
     try {
       const saved = localStorage.getItem(storageKey('classes'));
       const parsed = saved ? JSON.parse(saved) : null;
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     } catch {}
-    return [];
+    // Seed a default class containing the English 3A group for ALL roles on first load
+    return [{ id: 'default-class-english3a', name: 'English 3A', groupIds: [ENGLISH_3A_ID], createdAt: '2024-01-01 00:00:00' }];
   });
 
   useEffect(() => {
