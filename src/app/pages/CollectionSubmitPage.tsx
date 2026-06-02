@@ -1,6 +1,7 @@
-import { ChevronDown, Layers, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { CheckCircle, ChevronDown, Layers, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
+import { fileBlobUrls } from '../context/fileBlobStore';
 import type { CollectionItem } from './FileCollectionPage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -78,11 +79,11 @@ function formatReqText(item: CollectionItem) {
 }
 
 // ─── Create submission folder in localStorage ─────────────────────────────────
-function createSubmissionFolder(item: CollectionItem, folderName: string, files: File[], timestamp: string) {
+function createSubmissionFolder(item: CollectionItem, folderName: string, files: File[], timestamp: string): StoredFile[] {
   const parts = item.saveFolder.split(' / ').map(s => s.trim());
   const groupName = parts[0];
   const folderPathParts = parts.slice(1); // e.g. ['Students', '26 May Homework Submission']
-  if (!groupName || groupName === 'Personal') return;
+  if (!groupName || groupName === 'Personal') return [];
   try {
     // Search shared, teacher-private, and student-private group lists
     let group: { id: string; name: string } | undefined;
@@ -92,17 +93,18 @@ function createSubmissionFolder(item: CollectionItem, folderName: string, files:
       const arr: { id: string; name: string }[] = JSON.parse(raw);
       if (Array.isArray(arr)) { group = arr.find(g => g.name === groupName); if (group) break; }
     }
-    if (!group) return;
+    if (!group) return [];
     const foldersKey = `shared:folders-${group.id}`;
     const rootFolders: StoredFolder[] = JSON.parse(localStorage.getItem(foldersKey) || '[]');
     const now = timestamp;
+    const createdFiles: StoredFile[] = files.map((f, i) => ({
+      id: `file-${Date.now()}-${i}`, name: f.name, createdAt: now,
+      sizeLabel: formatBytes(f.size), mimeType: getMimeType(f.name), starred: false,
+    }));
     const newSubfolder: StoredFolder = {
       id: `submit-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
       name: folderName, createdAt: now, starred: false,
-      files: files.map((f, i) => ({
-        id: `file-${Date.now()}-${i}`, name: f.name, createdAt: now,
-        sizeLabel: formatBytes(f.size), mimeType: getMimeType(f.name), starred: false,
-      })),
+      files: createdFiles,
       folders: [],
     };
 
@@ -128,7 +130,9 @@ function createSubmissionFolder(item: CollectionItem, folderName: string, files:
 
     const updated = insertAtPath(rootFolders, folderPathParts);
     localStorage.setItem(foldersKey, JSON.stringify(updated));
+    return createdFiles;
   } catch { /* ignore */ }
+  return [];
 }
 
 // ─── Education Drive logo icon ───────────────────────────────────────────────
@@ -362,6 +366,12 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
   const [formFields, setFormFields] = useState<Record<string, string>>({});
   const [dragging, setDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); };
+  }, []);
 
   const MAX_FILES = 30;
   const remaining = Math.max(0, MAX_FILES - submittedMeta.length);
@@ -381,12 +391,20 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
       .filter(v => v.length > 0);
     const folderName = fieldValues.length > 0 ? fieldValues.join('-') : `Submission-${Date.now()}`;
     const ts = fmtTs();
-    createSubmissionFolder(item, folderName, pendingFiles, ts);
+    const createdFiles = createSubmissionFolder(item, folderName, pendingFiles, ts);
+    // Register blob URLs so the teacher can preview these files in GroupDetailView
+    createdFiles.forEach((storedFile, i) => {
+      const original = pendingFiles[i];
+      if (original) fileBlobUrls.set(storedFile.id, URL.createObjectURL(original));
+    });
     setSubmittedMeta(prev => [...prev, ...pendingFiles.map(f => ({
       name: f.name, sizeLabel: formatBytes(f.size), mimeType: getMimeType(f.name), timestamp: ts,
     }))]);
     setPendingFiles([]);
     setSubmitted(true);
+    setShowToast(true);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setShowToast(false), 3000);
   }
 
   function continueUploading() {
@@ -411,6 +429,17 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
   return (
     <div className="min-h-screen flex flex-col" style={gridBg}>
       <Header userEmail={userEmail} />
+
+      {/* Upload success toast */}
+      {showToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 bg-white border border-green-200 shadow-lg rounded-full px-5 py-3 animate-fade-in">
+          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+          <span className="text-sm font-medium text-gray-800">File upload successful!</span>
+          <button onClick={() => setShowToast(false)} className="ml-1 text-gray-400 hover:text-gray-600">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Collection info bar */}
       <div className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-shrink-0">

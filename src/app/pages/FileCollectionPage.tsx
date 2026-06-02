@@ -489,15 +489,13 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
                       <div key={folder.id}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors cursor-pointer ${selectedFolderId===folder.id?'bg-blue-50 text-blue-700':'text-gray-700 hover:bg-gray-50'}`}
                         onClick={()=>setSelectedFolderId(folder.id)}
-                        onDoubleClick={()=>{ if (folder.folders && folder.folders.length > 0) navigateIntoFolder(folder); }}
+                        onDoubleClick={()=>navigateIntoFolder(folder)}
                       >
                         <Folder className="w-5 h-5 text-blue-500 fill-blue-500 flex-shrink-0"/>
                         <span className="truncate flex-1">{folder.name}</span>
-                        {folder.folders && folder.folders.length > 0 && (
-                          <button onClick={(e)=>{e.stopPropagation(); navigateIntoFolder(folder);}} className="p-0.5 hover:bg-blue-100 rounded">
-                            <ChevronRight className="w-4 h-4 text-gray-400"/>
-                          </button>
-                        )}
+                        <button onClick={(e)=>{e.stopPropagation(); navigateIntoFolder(folder);}} className="p-0.5 hover:bg-blue-100 rounded">
+                          <ChevronRight className="w-4 h-4 text-gray-400"/>
+                        </button>
                       </div>
                     ))}
                   </div>

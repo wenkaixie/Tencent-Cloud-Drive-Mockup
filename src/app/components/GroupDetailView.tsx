@@ -23,6 +23,7 @@ import {
 import { Fragment, useEffect, useRef, useState, type ChangeEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import { fileBlobUrls } from '../context/fileBlobStore';
 import { ROLE_PERMISSIONS, type GroupMember, type MemberRole } from './GroupListView';
 
 interface FileItem {
@@ -82,7 +83,7 @@ function formatTimestamp(date = new Date()) {
 }
 
 // Stores blob URLs for in-session file preview (cleared on page refresh)
-const fileBlobUrls = new Map<string, string>();
+// Shared via fileBlobStore so CollectionSubmitPage uploads are also previewable.
 
 function sevenDaysFromNow() {
   const date = new Date();
