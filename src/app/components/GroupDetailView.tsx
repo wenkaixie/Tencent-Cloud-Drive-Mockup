@@ -24,6 +24,7 @@ import { Fragment, useEffect, useRef, useState, type ChangeEvent, type MouseEven
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useRole } from '../context/RoleContext';
 import { fileBlobUrls } from '../context/fileBlobStore';
+import { UpgradeModal, computeGroupStorageBytes, STORAGE_LIMIT_BYTES, type UpgradeReason } from './UpgradeModal';
 import { ROLE_PERMISSIONS, type GroupMember, type MemberRole } from './GroupListView';
 
 interface FileItem {
@@ -31,6 +32,8 @@ interface FileItem {
   name: string;
   createdAt: string;
   sizeLabel: string;
+  /** Raw byte size — 0 for files created before size tracking was added */
+  size: number;
   mimeType: string;
   starred: boolean;
   caption?: string;
@@ -120,6 +123,7 @@ function normalizeFolders(raw: unknown): FolderItem[] {
             name: file.name || 'Untitled File',
             createdAt: file.createdAt || entry.createdAt || formatTimestamp(),
             sizeLabel: file.sizeLabel || '0 B',
+            size: Number((file as Partial<FileItem>).size) || 0,
             mimeType: file.mimeType || 'application/octet-stream',
             starred: Boolean(file.starred),
             caption: file.caption,
@@ -259,6 +263,8 @@ export function GroupDetailView() {
   const [renameInput, setRenameInput] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [detailsFolder, setDetailsFolder] = useState<FolderItem | null>(null);
+
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | null>(null);
 
   // ── Announcements ────────────────────────────────────────────────────────────
   const [announcements, setAnnouncements] = useState<{id:string; text:string; author:string; createdAt:string}[]>(() => {
@@ -524,6 +530,15 @@ export function GroupDetailView() {
   function confirmUpload() {
     if (pendingUploadFiles.length === 0) return;
 
+    if (role === 'teacher') {
+      const currentGroupBytes = computeGroupStorageBytes();
+      const newBytes = pendingUploadFiles.reduce((acc, f) => acc + f.size, 0);
+      if (currentGroupBytes + newBytes > STORAGE_LIMIT_BYTES) {
+        setUpgradeReason('storage');
+        return;
+      }
+    }
+
     const caption = uploadCaption.trim() || undefined;
 
     const uploadedFiles: FileItem[] = pendingUploadFiles.map((file) => {
@@ -534,6 +549,7 @@ export function GroupDetailView() {
         name: file.name,
         createdAt: formatTimestamp(),
         sizeLabel: formatBytes(file.size),
+        size: file.size,
         mimeType: file.type || 'application/octet-stream',
         starred: false,
         caption,
@@ -698,6 +714,7 @@ export function GroupDetailView() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white">
+      {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />}
       <input
         ref={fileInputRef}
         type="file"

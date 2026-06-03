@@ -12,12 +12,28 @@ import {
 } from 'lucide-react';
 import { NavLink } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import { computeGroupStorageBytes, formatStorageUsed } from './UpgradeModal';
 
 export function Sidebar() {
   const { role, basePath } = useRole();
 
+  // Compute live storage totals for the teacher badge
+  const personalStorageBytes = (() => {
+    if (role !== 'teacher') return 0;
+    try {
+      const key = `teacher:personal-files`;
+      const data: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
+      if (!Array.isArray(data)) return 0;
+      return data.reduce((acc: number, f: unknown) => {
+        if (typeof f !== 'object' || f === null) return acc;
+        return acc + (((f as { size?: number }).size) ?? 0);
+      }, 0);
+    } catch { return 0; }
+  })();
+  const groupStorageBytes = role === 'teacher' ? computeGroupStorageBytes() : 0;
+
   return (
-    <div className="w-[210px] h-full bg-[#f5f6f7] border-r border-gray-200 flex flex-col">
+    <div className="w-[232px] h-full bg-[#f5f6f7] border-r border-gray-200 flex flex-col">
       <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-200">
         <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
           <Layers className="w-5 h-5 text-white" />
@@ -162,7 +178,12 @@ export function Sidebar() {
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-gray-900">{role === 'teacher' ? 'xiewenkai' : 'wangyifei'}</div>
             <div className="text-xs text-gray-500 truncate">{role === 'teacher' ? 'xiewenkai@tencentschool.com' : 'wangyifei@tencentschool.com'}</div>
-            <div className="text-xs text-gray-400">Used 49.5M</div>
+            {role === 'teacher' && (
+              <>
+                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(groupStorageBytes)}/10 GB (Group)</div>
+                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(personalStorageBytes)}/10 GB (Personal)</div>
+              </>
+            )}
           </div>
         </div>
       </div>

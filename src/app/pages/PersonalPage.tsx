@@ -19,12 +19,15 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import { useRole } from '../context/RoleContext';
+import { UpgradeModal, STORAGE_LIMIT_BYTES, type UpgradeReason } from '../components/UpgradeModal';
 
 interface PersonalFile {
   id: string;
   name: string;
   createdAt: string;
   sizeLabel: string;
+  /** Raw byte size — 0 for files created before size tracking was added */
+  size: number;
   mimeType: string;
   starred: boolean;
 }
@@ -79,6 +82,7 @@ function normalizeFiles(raw: unknown): PersonalFile[] {
       name: e.name || 'Untitled File',
       createdAt: e.createdAt || formatTimestamp(),
       sizeLabel: e.sizeLabel || '0 B',
+      size: Number((e as Partial<PersonalFile>).size) || 0,
       mimeType: e.mimeType || 'application/octet-stream',
       starred: Boolean(e.starred),
     }));
@@ -117,6 +121,8 @@ export function PersonalPage() {
   const [shareDownload, setShareDownload] = useState(false);
   const [shareSave, setShareSave] = useState(false);
   const [shareEdit, setShareEdit] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | null>(null);
+
   const [shareExpiry, setShareExpiry] = useState<'expired' | 'permanent'>('expired');
   const [shareExpiryDate] = useState(sevenDaysFromNow());
   const [shareUseCode, setShareUseCode] = useState(true);
@@ -149,11 +155,21 @@ export function PersonalPage() {
   function handleFileSelection(event: ChangeEvent<HTMLInputElement>) {
     const selected = Array.from(event.target.files || []);
     if (selected.length === 0) { event.target.value = ''; return; }
+    if (role === 'teacher') {
+      const currentPersonalBytes = files.reduce((acc, f) => acc + (f.size ?? 0), 0);
+      const newBytes = selected.reduce((acc, f) => acc + f.size, 0);
+      if (currentPersonalBytes + newBytes > STORAGE_LIMIT_BYTES) {
+        setUpgradeReason('storage');
+        event.target.value = '';
+        return;
+      }
+    }
     const uploaded: PersonalFile[] = selected.map((f) => ({
       id: makeId('pfile'),
       name: f.name,
       createdAt: formatTimestamp(),
       sizeLabel: formatBytes(f.size),
+      size: f.size,
       mimeType: f.type || 'application/octet-stream',
       starred: false,
     }));
@@ -204,12 +220,12 @@ export function PersonalPage() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white">
+      {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />}
       <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileSelection} />
 
       <div className="border-b border-gray-200 px-6 py-4">
         <div className="mb-4">
           <h1 className="text-xl font-semibold text-gray-900 leading-tight">Personal</h1>
-          <p className="text-sm text-gray-400 mt-0.5">51.85 MB used | 999.44 TB (Shared education space remaining) available</p>
         </div>
 
         <div className="flex items-center gap-2">

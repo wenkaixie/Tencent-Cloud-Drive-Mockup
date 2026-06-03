@@ -2,6 +2,9 @@ import { BookOpen, ChevronDown, ChevronLeft, ChevronRight, ChevronRight as Chevr
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import { UpgradeModal, type UpgradeReason } from './UpgradeModal';
+
+const MAX_TEACHER_GROUPS = 6;
 
 // ─── Role definitions ─────────────────────────────────────────────────────────
 export type MemberRole = 'Viewer' | 'Previewer' | 'Downloader' | 'Uploader' | 'Editor' | 'Transmitter' | 'Teacher' | 'Student' | 'Parent';
@@ -207,6 +210,9 @@ export function GroupListView() {
   const [linkDefaultRole, setLinkDefaultRole] = useState<MemberRole>('Editor');
   const [securityDropdownOpen, setSecurityDropdownOpen] = useState(false);
   const securityDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Upgrade modal
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | null>(null);
 
   // Editable member list inside Update Member modal
   const [editMembers, setEditMembers] = useState<GroupMember[]>([]);
@@ -452,6 +458,13 @@ export function GroupListView() {
   const [dragOverStandalone, setDragOverStandalone] = useState(false);
 
   function openCreateGroup() {
+    if (role === 'teacher') {
+      const ownedCount = groups.filter(g => g.members.some(m => m.username === currentUsername && m.isOwner)).length;
+      if (ownedCount >= MAX_TEACHER_GROUPS) {
+        setUpgradeReason('groups');
+        return;
+      }
+    }
     setNewGroupName('');
     setSelectedTemplates([]);
     setCreateOpen(true);
@@ -535,6 +548,14 @@ export function GroupListView() {
   function confirmInlineNewGroup() {
     const name = inlineNewGroupName.trim();
     if (!name) return;
+    if (role === 'teacher') {
+      const ownedCount = groups.filter(g => g.members.some(m => m.username === currentUsername && m.isOwner)).length;
+      if (ownedCount >= MAX_TEACHER_GROUPS) {
+        setCreateClassOpen(false);
+        setUpgradeReason('groups');
+        return;
+      }
+    }
     const id = crypto.randomUUID();
     const ownerUsername = role === 'teacher' ? 'xiewenkai' : 'wangyifei';
     const ownerColor = role === 'teacher' ? 'bg-blue-500' : 'bg-orange-400';
@@ -575,6 +596,14 @@ export function GroupListView() {
   function confirmAddGroupsInlineNewGroup() {
     const name = addGroupsInlineGroupName.trim();
     if (!name) return;
+    if (role === 'teacher') {
+      const ownedCount = groups.filter(g => g.members.some(m => m.username === currentUsername && m.isOwner)).length;
+      if (ownedCount >= MAX_TEACHER_GROUPS) {
+        setAddGroupsClassId(null);
+        setUpgradeReason('groups');
+        return;
+      }
+    }
     const id = crypto.randomUUID();
     const ownerUsername = role === 'teacher' ? 'xiewenkai' : 'wangyifei';
     const ownerColor = role === 'teacher' ? 'bg-blue-500' : 'bg-orange-400';
@@ -767,6 +796,7 @@ export function GroupListView() {
 
   return (
     <div className="flex-1 flex flex-col p-6 bg-white h-full">
+      {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Class</h1>
       </div>

@@ -1,6 +1,8 @@
 import { Briefcase, MonitorDown, ArrowUpDown, Mail, ChevronLeft, PenLine, FolderOpen, Columns2 } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import { UpgradeModal } from './UpgradeModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +13,7 @@ import {
 export function TopBar() {
   const { role, basePath } = useRole();
   const navigate = useNavigate();
+  const [showESignUpgrade, setShowESignUpgrade] = useState(false);
 
   function goToSplitView() {
     // Break out of iframe if embedded, otherwise navigate normally
@@ -23,6 +26,7 @@ export function TopBar() {
 
   return (
     <div className="h-14 border-b border-gray-200 bg-white flex items-center justify-between px-6 gap-3">
+      {showESignUpgrade && <UpgradeModal reason="esign" onClose={() => setShowESignUpgrade(false)} />}
       {/* Left: role badge + split view button */}
       <div className="flex items-center gap-2">
         <span
@@ -54,7 +58,7 @@ export function TopBar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem className="flex items-center gap-3 py-2.5 cursor-pointer">
+            <DropdownMenuItem className="flex items-center gap-3 py-2.5 cursor-pointer" onClick={() => setShowESignUpgrade(true)}>
               <span className="w-7 h-7 rounded flex items-center justify-center bg-green-500">
                 <PenLine className="w-4 h-4 text-white" />
               </span>
