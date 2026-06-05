@@ -196,7 +196,7 @@ function nowTimestamp() {
 
 export function GroupListView() {
   const navigate = useNavigate();
-  const { role, storageKey, sharedKey, basePath } = useRole();
+  const { role, storageKey, sharedKey, basePath, t } = useRole();
 
   // Invite modals
   const [inviteGroupId, setInviteGroupId] = useState<string | null>(null);
@@ -689,10 +689,10 @@ export function GroupListView() {
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-green-300 text-green-700 text-xs font-medium rounded">
                 <LogOut className="w-3 h-3" />
-                External Sharing
+                {t('badge_external_sharing')}
               </span>
             </div>
-            <div className="text-sm text-gray-500 mb-4">Group owner – {group.members.find(m => m.isOwner)?.username ?? 'xiewenkai'} / 0 files</div>
+            <div className="text-sm text-gray-500 mb-4">{t('group_owner_prefix')} {group.members.find(m => m.isOwner)?.username ?? 'xiewenkai'} {t('group_files_suffix')}</div>
 
             {/* Member avatars row */}
             <div className="flex items-center gap-1 mb-2 min-w-0">
@@ -743,7 +743,7 @@ export function GroupListView() {
               className="inline-flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-gray-100 text-xs rounded mt-2"
             >
               <Plus className="w-3 h-3" />
-              <span>Add Tag</span>
+              <span>{t('btn_add_tag')}</span>
             </button>
           </div>
 
@@ -776,7 +776,7 @@ export function GroupListView() {
                     <line x1="34" y1="76" x2="55" y2="76" stroke="#e5e7eb" strokeWidth="1.5" />
                   </svg>
                 </div>
-                <div className="text-gray-400 text-sm mb-3">No files found</div>
+                <div className="text-gray-400 text-sm mb-3">{t('empty_no_files_group')}</div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -784,7 +784,7 @@ export function GroupListView() {
                   }}
                   className="px-5 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
                 >
-                  Go to upload
+                  {t('btn_go_to_upload')}
                 </button>
               </div>
             )}
@@ -798,7 +798,7 @@ export function GroupListView() {
     <div className="flex-1 flex flex-col p-6 bg-white h-full">
       {upgradeReason && <UpgradeModal reason={upgradeReason} onClose={() => setUpgradeReason(null)} />}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Class</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t('page_class')}</h1>
       </div>
 
       {/* Toolbar */}
@@ -811,7 +811,7 @@ export function GroupListView() {
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
-                <span>New</span>
+                <span>{t('btn_new')}</span>
                 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
               </button>
               {newDropdownOpen && (
@@ -821,14 +821,14 @@ export function GroupListView() {
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-blue-50 text-left text-sm text-gray-700"
                   >
                     <BookOpen className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    New Class
+                    {t('btn_new_class')}
                   </button>
                   <button
                     onClick={() => { setNewDropdownOpen(false); openCreateGroup(); }}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-blue-50 text-left text-sm text-gray-700"
                   >
                     <Users className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                    New Group
+                    {t('btn_new_group')}
                   </button>
                 </div>
               )}
@@ -840,7 +840,7 @@ export function GroupListView() {
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
                 <Plus className="w-4 h-4" />
-                <span>New</span>
+                <span>{t('btn_new')}</span>
                 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
               </button>
               {newDropdownOpen && (
@@ -850,14 +850,14 @@ export function GroupListView() {
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-blue-50 text-left text-sm text-gray-700"
                   >
                     <BookOpen className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    New Class
+                    {t('btn_new_class')}
                   </button>
                   <button
                     onClick={() => { setNewDropdownOpen(false); openCreateGroup(); }}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 hover:bg-blue-50 text-left text-sm text-gray-700"
                   >
                     <Users className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                    New Group
+                    {t('btn_new_group')}
                   </button>
                 </div>
               )}
@@ -870,7 +870,7 @@ export function GroupListView() {
                 onClick={() => openInvite(selectedGroup.id)}
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
               >
-                Invite
+                {t('btn_invite')}
               </button>
               )}
               <button
@@ -882,19 +882,19 @@ export function GroupListView() {
                 }}
                 className="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 text-sm font-medium"
               >
-                Delete
+                {t('btn_delete')}
               </button>
               <button
                 onClick={openRename}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
               >
-                Rename
+                {t('btn_rename')}
               </button>
               <button
                 onClick={openTagMgmt}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
               >
-                Tag Management
+                {t('menu_tag_management')}
               </button>
             </>
           )}
@@ -903,7 +903,7 @@ export function GroupListView() {
           <div className="relative">
             <input
               type="text"
-              placeholder="Please enter class name"
+              placeholder={t('placeholder_search_class')}
               className="w-80 px-4 py-2 pr-20 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -928,11 +928,11 @@ export function GroupListView() {
               <div className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 border-b border-blue-200 group/cls rounded-t-xl sticky top-0 z-10">
                 <BookOpen className="w-4 h-4 text-blue-600 flex-shrink-0" />
                 <span className="font-semibold text-gray-900 text-sm">{cls.name}</span>
-                <span className="ml-1 text-xs text-gray-400 font-normal">{clsGroups.length} group{clsGroups.length !== 1 ? 's' : ''}</span>
+                <span className="ml-1 text-xs text-gray-400 font-normal">{clsGroups.length} {clsGroups.length !== 1 ? t('class_group_plural') : t('class_group_singular')}</span>
                 <button
                   onClick={(e) => { e.stopPropagation(); setClasses(prev => prev.filter(c => c.id !== cls.id)); }}
                   className="ml-auto p-1 rounded text-gray-400 hover:bg-red-50 hover:text-red-500 opacity-0 group-hover/cls:opacity-100 transition-opacity"
-                  title="Delete class (groups are kept)"
+                  title={t('title_delete_class')}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -948,7 +948,7 @@ export function GroupListView() {
                     className="text-center text-sm text-gray-400 py-4 cursor-pointer hover:bg-blue-100/50 rounded-lg transition-colors select-none"
                     onClick={() => openAddGroupsToClass(cls.id)}
                   >
-                    No group in this class yet. Click to add group or drag to add group.
+                    {t('empty_class_no_groups')}
                   </div>
                 ) : clsGroups.map(g => renderGroupCard(g))}
               </div>
@@ -976,7 +976,7 @@ export function GroupListView() {
                 <div className={`text-center text-sm py-3 rounded-lg border-2 border-dashed transition-colors ${
                   dragOverStandalone ? 'border-blue-400 bg-blue-50 text-blue-600 font-medium' : 'border-gray-300 text-gray-400'
                 }`}>
-                  Drop here to remove from class
+                  {t('drag_hint_remove_from_class')}
                 </div>
               )}
               {standaloneGroups.map(group => renderGroupCard(group))}
@@ -988,12 +988,12 @@ export function GroupListView() {
       {/* Footer */}
       {!selectedGroup && (
         <div className="mt-auto pt-4 flex items-center justify-between text-sm text-gray-500 border-t border-gray-100">
-          <span>{groups.length} items</span>
+          <span>{t('footer_items', { n: String(groups.length) })}</span>
           <div className="flex items-center gap-2">
             <select className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-600">
-              <option>10 / page</option>
-              <option>20 / page</option>
-              <option>50 / page</option>
+              <option>{t('pagination_10_page')}</option>
+              <option>{t('pagination_20_page')}</option>
+              <option>{t('pagination_50_page')}</option>
             </select>
             <button className="p-1 hover:bg-gray-100 rounded disabled:opacity-40" disabled>
               <ChevronLeft className="w-4 h-4" />
@@ -1015,7 +1015,7 @@ export function GroupListView() {
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-blue-600" />
-                Add Class
+                {t('modal_add_class_title')}
               </h2>
               <button onClick={() => setAddGroupsClassId(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1045,7 +1045,7 @@ export function GroupListView() {
                       />
                       <Users className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <span className="text-sm text-gray-800">{g.name}</span>
-                      <span className="ml-auto text-xs text-gray-400">{g.members.length} member{g.members.length !== 1 ? 's' : ''}</span>
+                      <span className="ml-auto text-xs text-gray-400">{g.members.length} {g.members.length !== 1 ? t('member_count_plural') : t('member_count_singular')}</span>
                     </label>
                   ))}
                 </div>
@@ -1062,7 +1062,7 @@ export function GroupListView() {
                     onChange={(e) => setAddGroupsInlineGroupName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && confirmAddGroupsInlineNewGroup()}
                     autoFocus
-                    placeholder="New group name"
+                    placeholder={t('placeholder_new_group_name')}
                     className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
@@ -1070,7 +1070,7 @@ export function GroupListView() {
                     disabled={!addGroupsInlineGroupName.trim()}
                     className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium disabled:opacity-50"
                   >
-                    Add
+                    {t('btn_add')}
                   </button>
                   <button
                     onClick={() => { setAddGroupsInlineMode(false); setAddGroupsInlineGroupName(''); }}
@@ -1085,7 +1085,7 @@ export function GroupListView() {
                   className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
                 >
                   <Plus className="w-4 h-4" />
-                  Create & add a new group
+                  {t('link_create_add_new_group')}
                 </button>
               )}
             </div>
@@ -1096,13 +1096,13 @@ export function GroupListView() {
                 onClick={() => setAddGroupsClassId(null)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmAddGroupsToClass}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                Confirm
+                {t('btn_confirm')}
               </button>
             </div>
           </div>
@@ -1116,7 +1116,7 @@ export function GroupListView() {
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-blue-600" />
-                Create Class
+                {t('modal_create_class_title')}
               </h2>
               <button onClick={() => setCreateClassOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1125,7 +1125,7 @@ export function GroupListView() {
 
             {/* Class Name */}
             <div className="mb-5">
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Class Name</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('label_class_name')}</label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1133,7 +1133,7 @@ export function GroupListView() {
                   onChange={(e) => setNewClassName(e.target.value.slice(0, 64))}
                   onKeyDown={(e) => e.key === 'Enter' && confirmCreateClass()}
                   autoFocus
-                  placeholder="e.g. English 3A"
+                  placeholder={t('placeholder_class_name_example')}
                   className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <span className="text-sm text-gray-400 whitespace-nowrap">{newClassName.length}/64</span>
@@ -1142,9 +1142,9 @@ export function GroupListView() {
 
             {/* Assign existing groups */}
             <div className="mb-4">
-              <label className="text-sm font-medium text-gray-700 mb-2 block">Add Groups to this Class</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">{t('label_add_groups_to_class')}</label>
               {groups.length === 0 ? (
-                <p className="text-sm text-gray-400 italic">No groups yet — create one below</p>
+                <p className="text-sm text-gray-400 italic">{t('empty_no_groups_yet')}</p>
               ) : (
                 <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                   {groups.map((g) => (
@@ -1163,7 +1163,7 @@ export function GroupListView() {
                       />
                       <Users className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <span className="text-sm text-gray-800">{g.name}</span>
-                      <span className="ml-auto text-xs text-gray-400">{g.members.length} member{g.members.length !== 1 ? 's' : ''}</span>
+                      <span className="ml-auto text-xs text-gray-400">{g.members.length} {g.members.length !== 1 ? t('member_count_plural') : t('member_count_singular')}</span>
                     </label>
                   ))}
                 </div>
@@ -1180,7 +1180,7 @@ export function GroupListView() {
                     onChange={(e) => setInlineNewGroupName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && confirmInlineNewGroup()}
                     autoFocus
-                    placeholder="New group name"
+                    placeholder={t('placeholder_new_group_name')}
                     className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
@@ -1188,7 +1188,7 @@ export function GroupListView() {
                     disabled={!inlineNewGroupName.trim()}
                     className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium disabled:opacity-50"
                   >
-                    Add
+                    {t('btn_add')}
                   </button>
                   <button
                     onClick={() => { setInlineNewGroupMode(false); setInlineNewGroupName(''); }}
@@ -1203,7 +1203,7 @@ export function GroupListView() {
                   className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
                 >
                   <Plus className="w-4 h-4" />
-                  Create & add a new group
+                  {t('link_create_add_new_group')}
                 </button>
               )}
             </div>
@@ -1214,14 +1214,14 @@ export function GroupListView() {
                 onClick={() => setCreateClassOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmCreateClass}
                 disabled={!newClassName.trim()}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Class
+                {t('btn_create_class')}
               </button>
             </div>
           </div>
@@ -1233,7 +1233,7 @@ export function GroupListView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[520px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Create group</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('modal_create_group_title')}</h2>
               <button onClick={() => setCreateOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1241,7 +1241,7 @@ export function GroupListView() {
 
             {/* Group Name */}
             <div className="mb-5">
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Group Name</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('label_group_name')}</label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1249,20 +1249,20 @@ export function GroupListView() {
                   onChange={(e) => setNewGroupName(e.target.value.slice(0, 64))}
                   onKeyDown={(e) => e.key === 'Enter' && confirmCreateGroup()}
                   autoFocus
-                  placeholder="Please enter group name"
+                  placeholder={t('placeholder_group_name')}
                   className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <span className="text-sm text-gray-400 whitespace-nowrap">{newGroupName.length}/64</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Name doesn't support characters "/", word count no more than 64 characters
+                {t('hint_name_64')}
               </p>
             </div>
 
             {/* Invitation Range */}
             <div className="flex items-center gap-3 mb-5">
               <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700 whitespace-nowrap">
-                Invitation range
+                {t('label_invitation_range')}
                 <span className="w-4 h-4 rounded-full border border-gray-400 text-gray-400 text-[10px] flex items-center justify-center cursor-help leading-none">
                   i
                 </span>
@@ -1276,8 +1276,8 @@ export function GroupListView() {
             {/* Select Template */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">Select template</span>
-                <button className="text-blue-600 text-sm hover:underline">More templates &rsaquo;</button>
+                <span className="text-sm font-medium text-gray-700">{t('label_select_template')}</span>
+                <button className="text-blue-600 text-sm hover:underline">{t('link_more_templates')}</button>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 {TEMPLATES.map((tpl) => (
@@ -1328,21 +1328,21 @@ export function GroupListView() {
                 <span className="w-5 h-5 rounded-full border-2 border-blue-600 flex items-center justify-center text-blue-600 font-bold text-xs leading-none">
                   +
                 </span>
-                Import
+                {t('btn_import')}
               </button>
               <div className="flex gap-2">
                 <button
                   onClick={() => setCreateOpen(false)}
                   className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
                 >
-                  Cancel
+                  {t('btn_cancel')}
                 </button>
                 <button
                   onClick={confirmCreateGroup}
                   disabled={!newGroupName.trim()}
                   className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  OK
+                  {t('btn_ok')}
                 </button>
               </div>
             </div>
@@ -1355,13 +1355,13 @@ export function GroupListView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[460px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Modify group name</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('modal_rename_group_title')}</h2>
               <button onClick={() => setRenameOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
             <div className="mb-5">
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Group Name</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('label_group_name')}</label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1374,7 +1374,7 @@ export function GroupListView() {
                 <span className="text-sm text-gray-400 whitespace-nowrap">{renameValue.length}/64</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">
-                Name doesn't support characters "/", word count no more than 64 characters
+                {t('hint_name_64')}
               </p>
             </div>
             <div className="flex justify-end gap-2 border-t border-gray-100 pt-4">
@@ -1382,14 +1382,14 @@ export function GroupListView() {
                 onClick={() => setRenameOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmRename}
                 disabled={!renameValue.trim()}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                OK
+                {t('btn_ok')}
               </button>
             </div>
           </div>
@@ -1401,7 +1401,7 @@ export function GroupListView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[480px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Tag Management</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('modal_tag_mgmt_title')}</h2>
               <button onClick={() => setTagMgmtOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1423,15 +1423,15 @@ export function GroupListView() {
               />
             </div>
             <p className="text-xs text-gray-400 mb-4">
-              Name doesn't support characters "\/:*?"&lt;&gt;|", word count no more than 80 characters
+              {t('hint_name_80')}
             </p>
 
             {/* Selected tags */}
             {pendingTags.length > 0 && (
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-gray-800">Selected</span>
-                  <button className="text-xs text-gray-500 hover:underline">All Tags &rsaquo;</button>
+                  <span className="text-sm font-semibold text-gray-800">{t('section_header_selected')}</span>
+                  <button className="text-xs text-gray-500 hover:underline">{t('link_all_tags')}</button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {pendingTags.map((tag) => (
@@ -1455,8 +1455,8 @@ export function GroupListView() {
             {/* Lastly section */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-800">Lastly</span>
-                <button className="text-xs text-gray-500 hover:underline">All Tags &rsaquo;</button>
+                <span className="text-sm font-semibold text-gray-800">{t('section_header_lastly')}</span>
+                <button className="text-xs text-gray-500 hover:underline">{t('link_all_tags')}</button>
               </div>
               <div className="flex flex-col items-center justify-center py-6 text-gray-400">
                 <svg viewBox="0 0 64 64" className="w-12 h-12 mb-2 opacity-40">
@@ -1465,7 +1465,7 @@ export function GroupListView() {
                   <line x1="22" y1="28" x2="34" y2="28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                   <line x1="28" y1="22" x2="28" y2="34" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
-                <span className="text-sm">No records, please add tags</span>
+                <span className="text-sm">{t('empty_no_tag_records')}</span>
               </div>
             </div>
 
@@ -1474,13 +1474,13 @@ export function GroupListView() {
                 onClick={() => setTagMgmtOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmTagMgmt}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                OK
+                {t('btn_ok')}
               </button>
             </div>
           </div>
@@ -1522,16 +1522,16 @@ export function GroupListView() {
                 </div>
                 {/* Generate invitation link row */}
                 <div className="mx-4 mb-6 flex items-center justify-between px-4 py-4 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-semibold text-gray-800">Generate invitation link</span>
+                  <span className="text-sm font-semibold text-gray-800">{t('section_generate_link')}</span>
                   <button
                     onClick={generateLink}
                     className="px-4 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
                   >
-                    Generate link
+                    {t('btn_generate_link')}
                   </button>
                 </div>
                 <div className="px-6 pb-5 text-xs text-gray-400">
-                  Valid within 7 days;External members can be invited; {linkDefaultRole}
+                  {t('invite_validity', { role: linkDefaultRole })}
                 </div>
               </>
             )}
@@ -1567,18 +1567,18 @@ export function GroupListView() {
                 {/* Link section */}
                 <div className="mx-4 mb-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                    <span className="text-sm font-semibold text-gray-800">Generate invitation link</span>
+                    <span className="text-sm font-semibold text-gray-800">{t('section_generate_link')}</span>
                     <button
                       onClick={() => { setInviteLink(null); setInviteView('main'); }}
                       className="px-3 py-1.5 border border-red-400 text-red-500 text-sm font-medium rounded-md hover:bg-red-50"
                     >
-                      Stop sharing
+                      {t('btn_stop_sharing')}
                     </button>
                   </div>
                   <div className="px-4 pt-3 pb-1">
-                    <p className="text-sm text-orange-500 font-medium">{linkExpiryDate} <span className="ml-1">Expired</span></p>
+                    <p className="text-sm text-orange-500 font-medium">{linkExpiryDate} <span className="ml-1">{t('link_expiry_status')}</span></p>
                     <p className="text-sm text-gray-600 mt-0.5">
-                      <span className="text-blue-600 font-medium">0</span> member joined successfully
+                      <span className="text-blue-600 font-medium">0</span> {t('members_joined')}
                     </p>
                   </div>
                   <div className="mx-4 border-t border-gray-200 my-2" />
@@ -1589,21 +1589,21 @@ export function GroupListView() {
                     </p>
                     <div className="flex justify-end mt-3">
                       <button
-                        onClick={() => inviteLink && navigator.clipboard.writeText(`Click the link to join my '${inviteGroup.name}' group and start a new experience of file collaboration management together! Link:${inviteLink}`)}
+                        onClick={() => inviteLink && navigator.clipboard.writeText(t('invite_message_template', { groupName: inviteGroup.name, link: inviteLink }))}
                         className="px-5 py-1.5 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
                       >
-                        Copy link
+                        {t('btn_copy_link')}
                       </button>
                     </div>
                   </div>
                 </div>
                 <div className="px-6 pb-5 flex items-center justify-between text-xs text-gray-400">
-                  <span>Valid within 7 days;External members can be invited; {linkDefaultRole}</span>
+                  <span>{t('invite_validity', { role: linkDefaultRole })}</span>
                   <button
                     onClick={() => setInviteView('security')}
                     className="text-blue-600 hover:underline text-xs font-medium flex-shrink-0 ml-2"
                   >
-                    Security settings
+                    {t('link_security_settings')}
                   </button>
                 </div>
               </>
@@ -1619,7 +1619,7 @@ export function GroupListView() {
                   >
                     <ChevronLeft className="w-5 h-5 text-gray-600" />
                   </button>
-                  <h2 className="text-lg font-semibold text-gray-900">Security settings</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">{t('modal_security_settings_title')}</h2>
                   <button onClick={closeInvite} className="ml-auto p-1 hover:bg-gray-100 rounded">
                     <X className="w-5 h-5 text-gray-500" />
                   </button>
@@ -1627,16 +1627,16 @@ export function GroupListView() {
                 {/* Invitation range */}
                 <div className="mx-4 mt-4 flex items-center justify-between px-4 py-4 bg-gray-50 rounded-lg mb-3">
                   <div className="flex items-center gap-1.5 text-sm font-medium text-gray-800">
-                    Invitation range
+                    {t('label_invitation_range')}
                     <span className="w-4 h-4 rounded-full border border-gray-400 text-gray-400 text-[10px] flex items-center justify-center cursor-help leading-none">!</span>
                   </div>
-                  <span className="text-sm text-gray-600">All users</span>
+                  <span className="text-sm text-gray-600">{t('security_all_users')}</span>
                 </div>
                 {/* Default permissions */}
                 <div className="mx-4 mb-6 px-4 py-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-sm font-medium text-gray-800">
-                      Default permissions for Invite Links
+                      {t('label_default_permissions')}
                       <span className="w-4 h-4 rounded-full border border-gray-400 text-gray-400 text-[10px] flex items-center justify-center cursor-help leading-none">!</span>
                     </div>
                     <div className="relative" ref={securityDropdownRef}>
@@ -1680,10 +1680,10 @@ export function GroupListView() {
           <div className="bg-white rounded-xl shadow-xl w-[780px] max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-base font-semibold text-gray-900">Update member</h2>
+              <h2 className="text-base font-semibold text-gray-900">{t('modal_update_member_title')}</h2>
               <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700">
                 <span className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center text-[10px]">?</span>
-                Permission details
+                {t('link_permission_details')}
               </button>
               <button onClick={closeInvite} className="ml-auto p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1697,10 +1697,10 @@ export function GroupListView() {
                 {/* Tabs */}
                 <div className="flex border-b border-gray-200 px-4 flex-shrink-0">
                   <button className="px-4 py-2.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 -mb-px">
-                    Corporate members
+                    {t('tab_corporate_members')}
                   </button>
                   <button className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700">
-                    Temporary members
+                    {t('tab_temporary_members')}
                   </button>
                 </div>
 
@@ -1711,7 +1711,7 @@ export function GroupListView() {
                       type="text"
                       value={orgSearch}
                       onChange={(e) => setOrgSearch(e.target.value)}
-                      placeholder="Please enter team/member name"
+                      placeholder={t('placeholder_search_team_member')}
                       className="w-full pl-3 pr-8 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                     <Search className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1743,7 +1743,7 @@ export function GroupListView() {
               <div className="flex-1 flex flex-col min-w-0">
                 {/* Right header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
-                  <span className="text-sm font-medium text-gray-700">All members {editMembers.length}</span>
+                  <span className="text-sm font-medium text-gray-700">{t('header_all_members')} {editMembers.length}</span>
                   {isCurrentUserGroupOwner && (
                   <div className="flex items-center gap-2">
                     {/* Batch permission dropdown */}
@@ -1753,7 +1753,7 @@ export function GroupListView() {
                         disabled={checkedMembers.size === 0}
                         className="flex items-center gap-1 px-2 py-1 text-xs border border-gray-300 rounded text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        Permission setting...
+                        {t('btn_permission_setting')}
                         <ChevronDown className="w-3 h-3" />
                       </button>
                       {batchRoleOpen && (
@@ -1782,7 +1782,7 @@ export function GroupListView() {
                       disabled={checkedMembers.size === 0}
                       className="text-xs text-gray-400 hover:text-red-500 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
-                      Delete
+                      {t('btn_delete_member')}
                     </button>
                   </div>
                   )}
@@ -1795,7 +1795,7 @@ export function GroupListView() {
                       type="text"
                       value={memberSearch}
                       onChange={(e) => setMemberSearch(e.target.value)}
-                      placeholder="Please enter members name"
+                      placeholder={t('placeholder_search_member')}
                       className="w-full pl-3 pr-8 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                     <Search className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1806,7 +1806,7 @@ export function GroupListView() {
                 <div className="flex-1 overflow-y-auto px-2 pb-2">
                   {editMembers.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                      <p className="text-sm text-gray-400">No members added yet</p>
+                      <p className="text-sm text-gray-400">{t('empty_no_members')}</p>
                     </div>
                   ) : (
                     editMembers
@@ -1844,7 +1844,7 @@ export function GroupListView() {
                           </div>
                           {/* Role */}
                           {member.isOwner ? (
-                            <span className="text-sm text-gray-500">Group owner (Myself)</span>
+                            <span className="text-sm text-gray-500">{t('role_owner_myself')}</span>
                           ) : isCurrentUserGroupOwner ? (
                             <div className="relative">
                               <button
@@ -1896,13 +1896,13 @@ export function GroupListView() {
                 onClick={closeInvite}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmUpdateMembers}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                Confirm
+                {t('btn_confirm')}
               </button>
             </div>
           </div>

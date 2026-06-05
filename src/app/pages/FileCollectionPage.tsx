@@ -6,6 +6,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useRole } from '../context/RoleContext';
+import type { TFunction } from '../i18n';
 
 type Participant = 'anyone' | 'designated';
 type ExpirationType = 'date' | 'permanent';
@@ -35,11 +36,11 @@ function sevenDaysFromNow() {
   d.setDate(d.getDate() + 7);
   return d.toISOString().slice(0, 10);
 }
-function daysLeft(dateStr: string) {
+function daysLeft(dateStr: string, t: TFunction) {
   const diff = new Date(dateStr).getTime() - Date.now();
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-  if (days <= 0) return 'Expired';
-  return `${days} day${days !== 1 ? 's' : ''} left`;
+  if (days <= 0) return t('expiry_expired');
+  return days === 1 ? t('days_left_one', { n: days }) : t('days_left_plural', { n: days });
 }
 function pad(n: number) { return String(n).padStart(2, '0'); }
 function formatDateTime(iso: string) {
@@ -51,8 +52,6 @@ function isExpired(item: CollectionItem) {
   return new Date(item.expiryDate).getTime() < Date.now();
 }
 
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const MOCK_MEMBERS: Record<string, string[]> = {
   'english-3a': ['Alice Wang', 'Bob Chen', 'Cathy Liu'],
   'math-3a': ['David Zhang', 'Emma Li', 'Frank Wu'],
@@ -79,7 +78,9 @@ function ActionButton({ label, icon, onClick, danger = false }: {
 }
 
 // ─── Calendar picker ─────────────────────────────────────────────────────────
-function CalendarPicker({ value, onChange, onClose }: { value: string; onChange: (v: string) => void; onClose: () => void; }) {
+function CalendarPicker({ value, onChange, onClose, t }: { value: string; onChange: (v: string) => void; onClose: () => void; t: TFunction; }) {
+  const MONTH_NAMES = [t('month_jan'),t('month_feb'),t('month_mar'),t('month_apr'),t('month_may'),t('month_jun'),t('month_jul'),t('month_aug'),t('month_sep'),t('month_oct'),t('month_nov'),t('month_dec')];
+  const DAY_NAMES = [t('day_mon'),t('day_tue'),t('day_wed'),t('day_thu'),t('day_fri'),t('day_sat'),t('day_sun')];
   const initial = value ? new Date(value + 'T00:00:00') : new Date();
   const [viewYear, setViewYear] = useState(initial.getFullYear());
   const [viewMonth, setViewMonth] = useState(initial.getMonth());
@@ -99,7 +100,7 @@ function CalendarPicker({ value, onChange, onClose }: { value: string; onChange:
   for (let y=today.getFullYear(); y<=today.getFullYear()+50; y++) yearOpts.push(y);
   return (
     <div className="absolute z-20 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl p-3 w-64" style={{top:'100%',left:0}}>
-      <div className="text-xs bg-gray-800 text-white rounded px-2 py-1 mb-2 text-center">Custom validity period limit can up to 50 years</div>
+      <div className="text-xs bg-gray-800 text-white rounded px-2 py-1 mb-2 text-center">{t('calendar_tooltip')}</div>
       <div className="flex items-center gap-1 mb-2">
         <select value={viewMonth} onChange={e=>setViewMonth(Number(e.target.value))} className="flex-1 border border-gray-200 rounded px-1 py-0.5 text-sm">
           {MONTH_NAMES.map((m,i)=><option key={i} value={i}>{m}</option>)}
@@ -128,8 +129,8 @@ function CalendarPicker({ value, onChange, onClose }: { value: string; onChange:
 }
 
 // ─── Naming convention dropdown (with chips) ─────────────────────────────────
-const NAMING_OPTIONS = ['Name','Phone number','School number','Work number','Email','ID number'];
-function NamingConventionDropdown({ selected, onChange }: { selected: string[]; onChange: (v: string[]) => void; }) {
+function NamingConventionDropdown({ selected, onChange, t }: { selected: string[]; onChange: (v: string[]) => void; t: TFunction; }) {
+  const NAMING_OPTIONS = [t('naming_option_name'),t('naming_option_phone'),t('naming_option_school'),t('naming_option_work'),t('naming_option_email'),t('naming_option_id')];
   const [open, setOpen] = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [customItems, setCustomItems] = useState<string[]>([]);
@@ -163,13 +164,13 @@ function NamingConventionDropdown({ selected, onChange }: { selected: string[]; 
                 <X className="w-2.5 h-2.5"/>
               </button>
             </span>
-          )) : <span className="text-gray-400">Please select a naming convention</span>}
+          )) : <span className="text-gray-400">{t('placeholder_naming')}</span>}
         </div>
         <ChevronDown className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform ${open?'rotate-180':''}`}/>
       </div>
       {open && (
         <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-          <div className="px-3 pt-2 pb-1 text-xs text-gray-400">Select no more than two options</div>
+          <div className="px-3 pt-2 pb-1 text-xs text-gray-400">{t('hint_naming_max')}</div>
           {[...NAMING_OPTIONS,...customItems].map(opt=>{
             const checked=selected.includes(opt);
             const disabled=!checked&&selected.length>=2;
@@ -185,12 +186,12 @@ function NamingConventionDropdown({ selected, onChange }: { selected: string[]; 
               <div className="flex items-center gap-2 mb-2">
                 <input autoFocus type="text" value={customInput} onChange={e=>setCustomInput(e.target.value)}
                   onKeyDown={e=>e.key==='Enter'&&addCustom()}
-                  placeholder="Enter custom field..." className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"/>
-                <button onClick={addCustom} className="text-xs text-blue-600 hover:underline">Add</button>
+                  placeholder={t('placeholder_custom_naming')} className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+                <button onClick={addCustom} className="text-xs text-blue-600 hover:underline">{t('btn_add')}</button>
               </div>
             )}
             <button onClick={()=>setShowCustomInput(true)} className="flex items-center gap-1 text-sm text-blue-600 hover:underline">
-              <Plus className="w-3.5 h-3.5"/> Add custom
+              <Plus className="w-3.5 h-3.5"/> {t('btn_add_custom')}
             </button>
           </div>
         </div>
@@ -200,8 +201,8 @@ function NamingConventionDropdown({ selected, onChange }: { selected: string[]; 
 }
 
 // ─── File format dropdown ─────────────────────────────────────────────────────
-const FORMAT_OPTIONS = ['Word','PPT','Excel','PDF'];
-function FileFormatDropdown({ selected, onChange }: { selected: string[]; onChange: (v: string[]) => void; }) {
+function FileFormatDropdown({ selected, onChange, t }: { selected: string[]; onChange: (v: string[]) => void; t: TFunction; }) {
+  const FORMAT_OPTIONS = [t('format_word'),t('format_ppt'),t('format_excel'),t('format_pdf')];
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -217,7 +218,7 @@ function FileFormatDropdown({ selected, onChange }: { selected: string[]; onChan
     <div ref={ref} className="relative">
       <button type="button" onClick={()=>setOpen(o=>!o)}
         className={`w-full border rounded px-3 py-2 text-sm text-left flex items-center justify-between focus:outline-none ${open?'border-blue-500':'border-gray-300'}`}>
-        <span className="text-gray-700">{selected.length>0?selected.join(', '):'No restriction'}</span>
+        <span className="text-gray-700">{selected.length>0?selected.join(', '):t('format_no_restriction')}</span>
         <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open?'rotate-180':''}`}/>
       </button>
       {open && (
@@ -235,9 +236,9 @@ function FileFormatDropdown({ selected, onChange }: { selected: string[]; onChan
 }
 
 // ─── Update member modal ──────────────────────────────────────────────────────
-function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose }: {
+function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose, t }: {
   sharedKey: (key: string) => string; initial: string[];
-  onConfirm: (members: string[]) => void; onClose: () => void;
+  onConfirm: (members: string[]) => void; onClose: () => void; t: TFunction;
 }) {
   const [groups] = useState<Group[]>(() => {
     try { const s=localStorage.getItem(sharedKey('groups')); const p=s?JSON.parse(s):[]; return Array.isArray(p)?p:[]; } catch { return []; }
@@ -255,15 +256,15 @@ function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose }: {
     <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl w-[680px] flex flex-col" style={{maxHeight:'75vh'}}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
-          <h3 className="text-base font-semibold text-gray-900">Update member</h3>
+          <h3 className="text-base font-semibold text-gray-900">{t('update_member_title')}</h3>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X className="w-4 h-4 text-gray-500"/></button>
         </div>
         <div className="flex flex-1 overflow-hidden">
           <div className="w-[320px] border-r border-gray-200 flex flex-col flex-shrink-0">
-            <div className="px-4 py-2.5 border-b border-gray-100"><span className="text-sm font-medium text-gray-700">Select members</span></div>
+            <div className="px-4 py-2.5 border-b border-gray-100"><span className="text-sm font-medium text-gray-700">{t('update_member_select')}</span></div>
             <div className="px-3 py-2 flex-shrink-0">
               <div className="relative">
-                <input value={leftSearch} onChange={e=>setLeftSearch(e.target.value)} placeholder="Please enter team/member name"
+                <input value={leftSearch} onChange={e=>setLeftSearch(e.target.value)} placeholder={t('placeholder_search_team')}
                   className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
                 <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"/>
               </div>
@@ -306,19 +307,19 @@ function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose }: {
           </div>
           <div className="flex-1 flex flex-col">
             <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
-              <span className="text-sm font-medium text-gray-700">All members {selected.length}</span>
-              {selected.length>0 && <button onClick={()=>setSelected([])} className="text-sm text-red-500 hover:underline">Delete</button>}
+              <span className="text-sm font-medium text-gray-700">{t('label_all_members')} {selected.length}</span>
+              {selected.length>0 && <button onClick={()=>setSelected([])} className="text-sm text-red-500 hover:underline">{t('btn_delete_all')}</button>}
             </div>
             <div className="px-3 py-2 flex-shrink-0">
               <div className="relative">
-                <input value={rightSearch} onChange={e=>setRightSearch(e.target.value)} placeholder="Please enter members name"
+                <input value={rightSearch} onChange={e=>setRightSearch(e.target.value)} placeholder={t('placeholder_search_members')}
                   className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
                 <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"/>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto px-3">
               {filteredSelected.length===0 ? (
-                <div className="flex items-center justify-center h-24 text-sm text-gray-400">Empty Data</div>
+                <div className="flex items-center justify-center h-24 text-sm text-gray-400">{t('empty_data')}</div>
               ) : filteredSelected.map(member=>(
                 <div key={member} className="flex items-center gap-2 py-2 border-b border-gray-50 group/item">
                   <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -334,8 +335,8 @@ function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose }: {
           </div>
         </div>
         <div className="flex items-center justify-end gap-3 px-5 py-3 border-t border-gray-200 flex-shrink-0">
-          <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
-          <button onClick={()=>onConfirm(selected)} className="px-5 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Confirm</button>
+          <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">{t('btn_cancel')}</button>
+          <button onClick={()=>onConfirm(selected)} className="px-5 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{t('btn_confirm')}</button>
         </div>
       </div>
     </div>
@@ -343,7 +344,7 @@ function UpdateMemberModal({ sharedKey, initial, onConfirm, onClose }: {
 }
 
 // ─── Select folder modal ──────────────────────────────────────────────────────
-function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { sharedKey: (key: string) => string; storageKey: (key: string) => string; onSelect: (path: string) => void; onClose: () => void; }) {
+function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose, t }: { sharedKey: (key: string) => string; storageKey: (key: string) => string; onSelect: (path: string) => void; onClose: () => void; t: TFunction; }) {
   const [groups] = useState<Group[]>(() => {
     try {
       const sharedSaved = localStorage.getItem(sharedKey('groups'));
@@ -398,7 +399,7 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
 
   const currentFolders = getFoldersAtCurrentPath();
   const filteredFolders = currentFolders.filter(f=>!search||(f.name??'').toLowerCase().includes(search.toLowerCase()));
-  const leftName = selectedLeft?(selectedLeft.type==='class'?selectedLeft.name:'Personal'):null;
+  const leftName = selectedLeft?(selectedLeft.type==='class'?selectedLeft.name:t('select_folder_personal')):null;
 
   // Build full path string for selection
   function getSelectedPath(): string {
@@ -440,13 +441,13 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
     <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl w-[720px] flex flex-col" style={{maxHeight:'75vh'}}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
-          <h3 className="text-base font-semibold text-gray-900">Select folder</h3>
+          <h3 className="text-base font-semibold text-gray-900">{t('select_folder_heading')}</h3>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X className="w-4 h-4 text-gray-500"/></button>
         </div>
         <div className="flex flex-1 overflow-hidden">
           <div className="w-52 border-r border-gray-200 overflow-y-auto flex-shrink-0 py-2">
             <div className="flex items-center justify-between px-3 py-1.5">
-              <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700"><Users className="w-3.5 h-3.5 text-gray-500"/><span>Class</span></div>
+              <div className="flex items-center gap-1.5 text-sm font-medium text-gray-700"><Users className="w-3.5 h-3.5 text-gray-500"/><span>{t('select_folder_class')}</span></div>
               <ChevronDown className="w-3.5 h-3.5 text-gray-400"/>
             </div>
             {groups.map(group=>(
@@ -458,7 +459,7 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
             <button onClick={()=>selectLeft({type:'personal'})}
               className={`w-full text-left px-3 py-2 mt-1 text-sm flex items-center gap-2 transition-colors ${selectedLeft?.type==='personal'?'text-blue-600 font-medium bg-blue-50':'text-gray-700 hover:bg-gray-50'}`}>
               <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0"><span className="text-[10px] text-gray-600 font-semibold">P</span></div>
-              <span>Personal</span>
+              <span>{t('select_folder_personal')}</span>
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
@@ -479,7 +480,7 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
                   ))}
                 </div>
                 <div className="relative mb-3">
-                  <input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search folders..."
+                  <input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder={t('placeholder_search_folders')}
                     className="w-full border border-gray-200 rounded px-3 py-1.5 text-sm pr-8 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
                   <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"/>
                 </div>
@@ -499,30 +500,30 @@ function SelectFolderModal({ sharedKey, storageKey, onSelect, onClose }: { share
                       </div>
                     ))}
                   </div>
-                ) : <div className="text-sm text-gray-400 text-center py-6">No folders found</div>}
+                ) : <div className="text-sm text-gray-400 text-center py-6">{t('empty_no_folders')}</div>}
                 {newFolderMode && (
                   <div className="mt-3 flex items-center gap-2">
                     <input autoFocus type="text" value={newFolderName} onChange={e=>setNewFolderName(e.target.value)}
                       onKeyDown={e=>{if(e.key==='Enter')confirmNewFolder();if(e.key==='Escape')setNewFolderMode(false);}}
-                      placeholder="New folder name" className="flex-1 border border-blue-400 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
-                    <button onClick={confirmNewFolder} className="text-sm text-blue-600 hover:underline">OK</button>
-                    <button onClick={()=>setNewFolderMode(false)} className="text-sm text-gray-400 hover:underline">Cancel</button>
+                      placeholder={t('placeholder_new_folder_name')} className="flex-1 border border-blue-400 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+                    <button onClick={confirmNewFolder} className="text-sm text-blue-600 hover:underline">{t('btn_ok')}</button>
+                    <button onClick={()=>setNewFolderMode(false)} className="text-sm text-gray-400 hover:underline">{t('btn_cancel')}</button>
                   </div>
                 )}
               </>
-            ) : <div className="flex items-center justify-center h-full text-sm text-gray-400">Select a folder from the left panel</div>}
+            ) : <div className="flex items-center justify-center h-full text-sm text-gray-400">{t('empty_select_from_left')}</div>}
           </div>
         </div>
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-200 flex-shrink-0">
           <button onClick={()=>{setNewFolderMode(true);setNewFolderName('');}} disabled={!selectedLeft}
             className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline disabled:opacity-40 disabled:cursor-not-allowed">
-            <FolderPlus className="w-4 h-4"/> New Folder
+            <FolderPlus className="w-4 h-4"/> {t('btn_new_folder')}
           </button>
           <div className="flex items-center gap-2">
-            <button onClick={onClose} className="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">{t('btn_cancel')}</button>
             <button onClick={()=>{const path=getSelectedPath(); if(path) onSelect(path);}} disabled={!selectedLeft}
               className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed">
-              Select current folder
+              {t('btn_select_current_folder')}
             </button>
           </div>
         </div>
@@ -545,19 +546,20 @@ interface CollectionFormBodyProps {
   memberModalOpen: boolean; setMemberModalOpen: (v: boolean) => void;
   calendarRef: React.RefObject<HTMLDivElement | null>;
   calendarOpen: boolean; setCalendarOpen: (v: boolean) => void;
+  t: TFunction;
 }
-function CollectionFormBody({ form, setForm, sharedKey: _sharedKey, folderModalOpen, setFolderModalOpen, memberModalOpen, setMemberModalOpen, calendarRef, calendarOpen, setCalendarOpen }: CollectionFormBodyProps) {
+function CollectionFormBody({ form, setForm, sharedKey: _sharedKey, folderModalOpen, setFolderModalOpen, memberModalOpen, setMemberModalOpen, calendarRef, calendarOpen, setCalendarOpen, t }: CollectionFormBodyProps) {
   return (
     <div className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
       <div>
         <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1.5">
-          <span className="text-red-500">*</span> Collection title
+          <span className="text-red-500">*</span> {t('form_collection_title')}
         </label>
         <input type="text" value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} placeholder="Please enter content"
           className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1.5 block">Document request <span className="text-gray-400 font-normal">(Optional)</span></label>
+        <label className="text-sm font-medium text-gray-700 mb-1.5 block">{t('form_document_request')} <span className="text-gray-400 font-normal">{t('form_optional')}</span></label>
         <div className="relative">
           <textarea value={form.request} onChange={e=>setForm(f=>({...f,request:e.target.value.slice(0,200)}))} placeholder="Please enter content" rows={3}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
@@ -565,44 +567,44 @@ function CollectionFormBody({ form, setForm, sharedKey: _sharedKey, folderModalO
         </div>
       </div>
       <div>
-        <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1.5"><span className="text-red-500">*</span> Save folder</label>
+        <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1.5"><span className="text-red-500">*</span> {t('form_save_folder')}</label>
         <div className="flex gap-2">
           <input type="text" value={form.saveFolder} readOnly placeholder="Please select folder"
             className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm bg-gray-50 text-gray-700 focus:outline-none cursor-pointer"
             onClick={()=>setFolderModalOpen(true)}/>
-          <button onClick={()=>setFolderModalOpen(true)} className="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">Select</button>
+          <button onClick={()=>setFolderModalOpen(true)} className="px-4 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">{t('btn_select_folder')}</button>
         </div>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">Collection participant</label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">{t('form_participant')}</label>
         <div className="space-y-2">
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="radio" name="participant" checked={form.participant==='anyone'} onChange={()=>setForm(f=>({...f,participant:'anyone'}))} className="accent-blue-600"/>
-            <span className="text-sm font-medium text-gray-800">Anyone</span>
-            <span className="text-sm text-gray-400">Invite anyone via link (No account required)</span>
+            <span className="text-sm font-medium text-gray-800">{t('form_anyone')}</span>
+            <span className="text-sm text-gray-400">{t('form_anyone_desc')}</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="radio" name="participant" checked={form.participant==='designated'} onChange={()=>setForm(f=>({...f,participant:'designated'}))} className="accent-blue-600"/>
-            <span className="text-sm font-medium text-gray-800">Designated members</span>
-            <span className="text-sm text-gray-400">Invite members through messages</span>
+            <span className="text-sm font-medium text-gray-800">{t('form_designated')}</span>
+            <span className="text-sm text-gray-400">{t('form_designated_desc')}</span>
           </label>
           {form.participant==='designated' && (
             <div className="mt-1 ml-6 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-gray-500">{form.members.length>0?`${form.members.length} member${form.members.length!==1?'s':''} selected`:'Add members'}</span>
+              <span className="text-sm text-gray-500">{form.members.length>0?t('form_members_selected', { n: form.members.length }):t('btn_add_members')}</span>
               <button onClick={()=>setMemberModalOpen(true)} className="text-sm text-blue-600 hover:underline flex items-center gap-0.5">
-                Add <ChevRight className="w-3.5 h-3.5"/>
+                {t('btn_add')} <ChevRight className="w-3.5 h-3.5"/>
               </button>
             </div>
           )}
         </div>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">Expiration date</label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">{t('form_expiration')}</label>
         <div className="space-y-2">
           <div className="flex items-center gap-3 flex-wrap">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="expiry" checked={form.expirationType==='date'} onChange={()=>setForm(f=>({...f,expirationType:'date'}))} className="accent-blue-600"/>
-              <span className="text-sm font-medium text-gray-800">Expired on</span>
+              <span className="text-sm font-medium text-gray-800">{t('form_expired_on')}</span>
             </label>
             <div ref={calendarRef} className="relative flex items-center gap-2">
               <div className="flex items-center border border-gray-300 rounded px-2 py-1 gap-2 bg-white">
@@ -616,28 +618,28 @@ function CollectionFormBody({ form, setForm, sharedKey: _sharedKey, folderModalO
                   </svg>
                 </button>
               </div>
-              {form.expirationType==='date'&&form.expiryDate&&<span className="text-sm text-gray-500">{daysLeft(form.expiryDate)}</span>}
-              {calendarOpen && <CalendarPicker value={form.expiryDate} onChange={v=>setForm(f=>({...f,expiryDate:v,expirationType:'date'}))} onClose={()=>setCalendarOpen(false)}/>}
+              {form.expirationType==='date'&&form.expiryDate&&<span className="text-sm text-gray-500">{daysLeft(form.expiryDate, t)}</span>}
+              {calendarOpen && <CalendarPicker value={form.expiryDate} onChange={v=>setForm(f=>({...f,expiryDate:v,expirationType:'date'}))} onClose={()=>setCalendarOpen(false)} t={t}/>}
             </div>
           </div>
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="radio" name="expiry" checked={form.expirationType==='permanent'} onChange={()=>setForm(f=>({...f,expirationType:'permanent'}))} className="accent-blue-600"/>
-            <span className="text-sm font-medium text-gray-800">Permanent validity</span>
+            <span className="text-sm font-medium text-gray-800">{t('form_permanent_validity')}</span>
           </label>
         </div>
       </div>
       <div>
-        <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1.5"><span className="text-red-500">*</span> Set the naming convention</label>
-        <NamingConventionDropdown selected={form.namingSelected} onChange={v=>setForm(f=>({...f,namingSelected:v}))}/>
+        <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1.5"><span className="text-red-500">*</span> {t('form_naming_convention')}</label>
+        <NamingConventionDropdown selected={form.namingSelected} onChange={v=>setForm(f=>({...f,namingSelected:v}))} t={t}/>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1.5 block">File format requirement</label>
-        <FileFormatDropdown selected={form.fileFormats} onChange={v=>setForm(f=>({...f,fileFormats:v}))}/>
+        <label className="text-sm font-medium text-gray-700 mb-1.5 block">{t('form_file_format')}</label>
+        <FileFormatDropdown selected={form.fileFormats} onChange={v=>setForm(f=>({...f,fileFormats:v}))} t={t}/>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1.5 block">Example file <span className="text-gray-400 font-normal">(Optional)</span></label>
+        <label className="text-sm font-medium text-gray-700 mb-1.5 block">{t('form_example_file')} <span className="text-gray-400 font-normal">{t('form_optional')}</span></label>
         <div className="border border-dashed border-gray-300 rounded-lg p-6 flex items-center justify-center bg-gray-50 min-h-[80px]">
-          <button className="text-sm text-blue-600 hover:underline">Select a TCED file</button>
+          <button className="text-sm text-blue-600 hover:underline">{t('btn_select_tced_file')}</button>
         </div>
       </div>
     </div>
@@ -645,11 +647,12 @@ function CollectionFormBody({ form, setForm, sharedKey: _sharedKey, folderModalO
 }
 
 // ─── Initiate collection modal ────────────────────────────────────────────────
-function InitiateCollectionModal({ sharedKey, storageKey, onSubmit, onClose }: {
+function InitiateCollectionModal({ sharedKey, storageKey, onSubmit, onClose, t }: {
   sharedKey: (key: string) => string;
   storageKey: (key: string) => string;
   onSubmit: (data: CollectionFormData) => void;
   onClose: () => void;
+  t: TFunction;
 }) {
   const [form, setForm] = useState<CollectionFormData>({
     title:'',request:'',saveFolder:'',participant:'anyone',members:[],
@@ -669,32 +672,33 @@ function InitiateCollectionModal({ sharedKey, storageKey, onSubmit, onClose }: {
       <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-2xl w-[500px] max-h-[90vh] flex flex-col">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-            <h2 className="text-base font-semibold text-gray-900">File collection</h2>
+            <h2 className="text-base font-semibold text-gray-900">{t('modal_initiate_heading')}</h2>
             <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X className="w-4 h-4 text-gray-500"/></button>
           </div>
           <CollectionFormBody form={form} setForm={setForm} sharedKey={sharedKey}
             folderModalOpen={folderModalOpen} setFolderModalOpen={setFolderModalOpen}
             memberModalOpen={memberModalOpen} setMemberModalOpen={setMemberModalOpen}
-            calendarRef={calendarRef} calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen}/>
+            calendarRef={calendarRef} calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} t={t}/>
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 flex-shrink-0">
-            <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">{t('btn_cancel')}</button>
             <button onClick={()=>{if(form.title.trim()&&form.saveFolder.trim()&&form.namingSelected.length>0)onSubmit(form);}}
-              className="px-5 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">Initiate collection</button>
+              className="px-5 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">{t('btn_initiate_submit')}</button>
           </div>
         </div>
       </div>
-      {folderModalOpen&&<SelectFolderModal sharedKey={sharedKey} storageKey={storageKey} onSelect={path=>{setForm(f=>({...f,saveFolder:path}));setFolderModalOpen(false);}} onClose={()=>setFolderModalOpen(false)}/>}
-      {memberModalOpen&&<UpdateMemberModal sharedKey={sharedKey} initial={form.members} onConfirm={members=>{setForm(f=>({...f,members}));setMemberModalOpen(false);}} onClose={()=>setMemberModalOpen(false)}/>}
+      {folderModalOpen&&<SelectFolderModal sharedKey={sharedKey} storageKey={storageKey} onSelect={path=>{setForm(f=>({...f,saveFolder:path}));setFolderModalOpen(false);}} onClose={()=>setFolderModalOpen(false)} t={t}/>}
+      {memberModalOpen&&<UpdateMemberModal sharedKey={sharedKey} initial={form.members} onConfirm={members=>{setForm(f=>({...f,members}));setMemberModalOpen(false);}} onClose={()=>setMemberModalOpen(false)} t={t}/>}
     </>
   );
 }
 
 // ─── Settings modal ───────────────────────────────────────────────────────────
-function SettingsModal({ item, sharedKey, storageKey, onSave, onDelete, onClose }: {
+function SettingsModal({ item, sharedKey, storageKey, onSave, onDelete, onClose, t }: {
   item: CollectionItem; sharedKey: (key: string) => string; storageKey: (key: string) => string;
   onSave: (updated: CollectionItem) => void;
   onDelete: () => void;
   onClose: () => void;
+  t: TFunction;
 }) {
   const [form, setForm] = useState<CollectionFormData>({
     title: item.title, request: '', saveFolder: item.saveFolder,
@@ -720,29 +724,29 @@ function SettingsModal({ item, sharedKey, storageKey, onSave, onDelete, onClose 
       <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
         <div className="bg-white rounded-xl shadow-2xl w-[500px] max-h-[90vh] flex flex-col">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-            <h2 className="text-base font-semibold text-gray-900">File collection settings</h2>
+            <h2 className="text-base font-semibold text-gray-900">{t('modal_settings_heading')}</h2>
             <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X className="w-4 h-4 text-gray-500"/></button>
           </div>
           <CollectionFormBody form={form} setForm={setForm} sharedKey={sharedKey}
             folderModalOpen={folderModalOpen} setFolderModalOpen={setFolderModalOpen}
             memberModalOpen={memberModalOpen} setMemberModalOpen={setMemberModalOpen}
-            calendarRef={calendarRef} calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen}/>
+            calendarRef={calendarRef} calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} t={t}/>
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 flex-shrink-0">
-            <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button onClick={onDelete} className="px-5 py-2 bg-red-500 text-white rounded text-sm font-medium hover:bg-red-600">Delete</button>
-            <button onClick={handleSave} className="px-5 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">Save</button>
+            <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50">{t('btn_cancel')}</button>
+            <button onClick={onDelete} className="px-5 py-2 bg-red-500 text-white rounded text-sm font-medium hover:bg-red-600">{t('btn_settings_delete')}</button>
+            <button onClick={handleSave} className="px-5 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">{t('btn_settings_save')}</button>
           </div>
         </div>
       </div>
-      {folderModalOpen&&<SelectFolderModal sharedKey={sharedKey} storageKey={storageKey} onSelect={path=>{setForm(f=>({...f,saveFolder:path}));setFolderModalOpen(false);}} onClose={()=>setFolderModalOpen(false)}/>}
-      {memberModalOpen&&<UpdateMemberModal sharedKey={sharedKey} initial={form.members} onConfirm={members=>{setForm(f=>({...f,members}));setMemberModalOpen(false);}} onClose={()=>setMemberModalOpen(false)}/>}
+      {folderModalOpen&&<SelectFolderModal sharedKey={sharedKey} storageKey={storageKey} onSelect={path=>{setForm(f=>({...f,saveFolder:path}));setFolderModalOpen(false);}} onClose={()=>setFolderModalOpen(false)} t={t}/>}
+      {memberModalOpen&&<UpdateMemberModal sharedKey={sharedKey} initial={form.members} onConfirm={members=>{setForm(f=>({...f,members}));setMemberModalOpen(false);}} onClose={()=>setMemberModalOpen(false)} t={t}/>}
     </>
   );
 }
 
 // ─── View details modal ("My file collection") ────────────────────────────────
-function ViewDetailsModal({ item, onOpenSettings, onClose }: {
-  item: CollectionItem; onOpenSettings: () => void; onClose: () => void;
+function ViewDetailsModal({ item, onOpenSettings, onClose, t }: {
+  item: CollectionItem; onOpenSettings: () => void; onClose: () => void; t: TFunction;
 }) {
   const link = `${window.location.origin}/collect/${item.id}`;
   const [copied, setCopied] = useState(false);
@@ -752,12 +756,12 @@ function ViewDetailsModal({ item, onOpenSettings, onClose }: {
   }
   const namingRules = item.namingSelected.join('+') || 'None';
   const formatReq = item.fileFormats.length>0 ? item.fileFormats.join(', ') : 'None';
-  const validityText = item.expirationType==='permanent' ? 'Permanent validity' : `Until ${item.expiryDate} valid`;
+  const validityText = item.expirationType==='permanent' ? t('collection_permanent_validity') : t('collection_until_valid', { date: item.expiryDate });
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl w-[460px] max-h-[90vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-base font-semibold text-gray-900">My file collection</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t('view_details_heading')}</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded"><X className="w-4 h-4 text-gray-500"/></button>
         </div>
         <div className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
@@ -766,20 +770,20 @@ function ViewDetailsModal({ item, onOpenSettings, onClose }: {
             <div className="flex items-start justify-between">
               <div>
                 <div className={`text-sm font-medium mb-1 ${isExpired(item)?'text-gray-400':'text-green-600'}`}>{validityText}</div>
-                <div className="text-sm text-gray-500">{item.submitted} member{item.submitted!==1?'s':''} has successfully submitted</div>
+                <div className="text-sm text-gray-500">{t('view_details_submitted', { n: item.submitted })}</div>
               </div>
-              <button className="px-3 py-1.5 border border-red-400 rounded text-sm text-red-500 hover:bg-red-50 flex-shrink-0 ml-4">Stop</button>
+              <button className="px-3 py-1.5 border border-red-400 rounded text-sm text-red-500 hover:bg-red-50 flex-shrink-0 ml-4">{t('btn_stop_collection')}</button>
             </div>
           </div>
           {/* Link card */}
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600 mb-2">
-              user invite you to participate in the file collection task. Click the link to submit your documents.
+              {t('view_details_invite_text')}
             </p>
-            <p className="text-sm font-semibold text-gray-800 break-all mb-3">Link: {link}</p>
+            <p className="text-sm font-semibold text-gray-800 break-all mb-3">{t('view_details_link_label', { url: link })}</p>
             <div className="flex justify-end">
               <button onClick={copyLink} className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700">
-                <Copy className="w-3.5 h-3.5"/> {copied?'Copied!':'Copy link'}
+                <Copy className="w-3.5 h-3.5"/> {copied ? t('view_details_copied') : t('btn_copy_link')}
               </button>
             </div>
           </div>
@@ -788,19 +792,19 @@ function ViewDetailsModal({ item, onOpenSettings, onClose }: {
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <div className="text-sm font-medium text-gray-800">{item.title}</div>
-                <div className="text-sm text-gray-500">Format requirements: {formatReq}</div>
-                <div className="text-sm text-gray-500">Naming rules: {namingRules}</div>
+                <div className="text-sm text-gray-500">{t('view_details_format_req', { value: formatReq })}</div>
+                <div className="text-sm text-gray-500">{t('view_details_naming_rules', { value: namingRules })}</div>
               </div>
-              <button onClick={()=>{onClose();onOpenSettings();}} className="text-sm text-blue-600 hover:underline flex-shrink-0 ml-4">Settings</button>
+              <button onClick={()=>{onClose();onOpenSettings();}} className="text-sm text-blue-600 hover:underline flex-shrink-0 ml-4">{t('link_settings')}</button>
             </div>
           </div>
           {/* Submit members */}
           <div className="flex items-center justify-between pt-1">
-            <span className="text-sm font-medium text-gray-700">Submit Members ({item.submitted})</span>
-            <button className="text-sm text-blue-600 hover:underline">View folder</button>
+            <span className="text-sm font-medium text-gray-700">{t('view_details_submit_members', { n: item.submitted })}</span>
+            <button className="text-sm text-blue-600 hover:underline">{t('btn_view_folder')}</button>
           </div>
           {item.submitted===0 ? (
-            <div className="text-sm text-gray-400 text-center py-6">No submissions yet</div>
+            <div className="text-sm text-gray-400 text-center py-6">{t('view_details_no_submissions')}</div>
           ) : (
             <div className="space-y-3">
               {Array.from({length:item.submitted}).map((_,i)=>(
@@ -874,7 +878,7 @@ function SortIcon() {
 // ─── Main page ────────────────────────────────────────────────────────────────
 export function FileCollectionPage() {
   const navigate = useNavigate();
-  const { role, basePath, storageKey, sharedKey } = useRole();
+  const { role, basePath, storageKey, sharedKey, t } = useRole();
 
   const [activeTab, setActiveTab] = useState<TabType>('initiated');
   const [modalOpen, setModalOpen] = useState(false);
@@ -961,11 +965,11 @@ export function FileCollectionPage() {
       <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <FolderOpen className="w-5 h-5 text-blue-600"/>
-          <h1 className="text-base font-semibold text-gray-900">File Collection</h1>
+          <h1 className="text-base font-semibold text-gray-900">{t('page_file_collection')}</h1>
         </div>
         <button onClick={()=>navigate(`${basePath}/workbench`)}
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md border border-gray-200">
-          Exit <LogOut className="w-4 h-4"/>
+          {t('btn_exit')} <LogOut className="w-4 h-4"/>
         </button>
       </div>
       <div className="flex-shrink-0 bg-gradient-to-r from-slate-50 to-blue-50 border-b border-gray-100 relative overflow-hidden" style={{height:180}}>
@@ -973,8 +977,8 @@ export function FileCollectionPage() {
           className="absolute left-6 top-1/2 -translate-y-1/2 bg-white rounded-xl shadow-md p-5 w-52 cursor-pointer hover:shadow-lg transition-shadow border border-gray-100">
           <div className="flex items-start gap-3">
             <div className="flex-1">
-              <div className="text-blue-600 font-semibold text-sm mb-1">Initiate collection</div>
-              <div className="text-gray-400 text-xs leading-relaxed">Select drive folder<br/>Collect files</div>
+              <div className="text-blue-600 font-semibold text-sm mb-1">{t('hero_initiate_title')}</div>
+              <div className="text-gray-400 text-xs leading-relaxed">{t('hero_line1')}<br/>{t('hero_line2')}</div>
             </div>
             <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
               <FolderOpen className="w-5 h-5 text-white"/>
@@ -988,7 +992,7 @@ export function FileCollectionPage() {
           {(['initiated','received'] as TabType[]).map(tab=>(
             <button key={tab} onClick={()=>setActiveTab(tab)}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab===tab?'border-blue-600 text-blue-600':'border-transparent text-gray-500 hover:text-gray-700'}`}>
-              {tab==='initiated'?'I initiated':'I received'}
+              {tab==='initiated'?t('tab_i_initiated'):t('tab_i_received')}
             </button>
           ))}
         </div>
@@ -997,9 +1001,9 @@ export function FileCollectionPage() {
         <div className="flex-1 flex items-center justify-center overflow-y-auto">
           <div className="text-center">
             <EmptyIllustration/>
-            <p className="text-sm text-gray-400 mt-4 mb-5">No data available</p>
+            <p className="text-sm text-gray-400 mt-4 mb-5">{t('empty_no_data')}</p>
             <button onClick={()=>setModalOpen(true)} className="px-6 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-              Initiate collection
+              {t('btn_initiate_collection')}
             </button>
           </div>
         </div>
@@ -1009,10 +1013,10 @@ export function FileCollectionPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-gray-200 bg-white sticky top-0">
-                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 w-2/5">Name <SortIcon/></th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-1/4">Creation time <SortIcon/></th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-1/6">Progress</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">Status</th>
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 w-2/5">{t('table_header_name')} <SortIcon/></th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-1/4">{t('table_header_creation_time')} <SortIcon/></th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 w-1/6">{t('table_header_progress')}</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">{t('table_header_status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1040,7 +1044,7 @@ export function FileCollectionPage() {
                           </div>
                         ) : (
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${expired?'bg-gray-100 text-gray-500':'bg-green-100 text-green-700'}`}>
-                            {expired?'Expired':'Collecting'}
+                            {expired?t('status_expired'):t('status_collecting')}
                           </span>
                         )}
                       </td>
@@ -1060,17 +1064,17 @@ export function FileCollectionPage() {
           </div>
         </div>
       )}
-      {modalOpen && <InitiateCollectionModal sharedKey={sharedKey} storageKey={storageKey} onSubmit={handleSubmit} onClose={()=>setModalOpen(false)}/>}
+      {modalOpen && <InitiateCollectionModal sharedKey={sharedKey} storageKey={storageKey} onSubmit={handleSubmit} onClose={()=>setModalOpen(false)} t={t}/>}
       {viewDetailsItem && (
         <ViewDetailsModal item={viewDetailsItem}
           onOpenSettings={()=>{ setSettingsItem(viewDetailsItem); setViewDetailsItem(null); }}
-          onClose={()=>setViewDetailsItem(null)}/>
+          onClose={()=>setViewDetailsItem(null)} t={t}/>
       )}
       {settingsItem && (
         <SettingsModal item={settingsItem} sharedKey={sharedKey} storageKey={storageKey}
           onSave={handleSaveSettings}
           onDelete={()=>handleDelete(settingsItem.id)}
-          onClose={()=>setSettingsItem(null)}/>
+          onClose={()=>setSettingsItem(null)} t={t}/>
       )}
     </div>
   );

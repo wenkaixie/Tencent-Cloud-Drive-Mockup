@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useRole } from '../context/RoleContext';
 
 export type UpgradeReason = 'groups' | 'storage' | 'esign';
 
@@ -7,26 +8,19 @@ interface UpgradeModalProps {
   onClose: () => void;
 }
 
-const CONTENT: Record<UpgradeReason, { title: string; message: string }> = {
-  groups: {
-    title: 'Group Limit Reached',
-    message:
-      'You have reached the maximum of 6 groups on your current plan. Upgrade to the Enterprise tier to create unlimited groups and unlock more collaboration features.',
-  },
-  storage: {
-    title: 'Storage Limit Reached',
-    message:
-      'You have reached the 10 GB storage limit on your current plan. Upgrade to the Enterprise tier for expanded storage and advanced file management.',
-  },
-  esign: {
-    title: 'E-Sign — Enterprise Feature',
-    message:
-      'E-Sign is available on the Enterprise tier. Upgrade to access digital signatures, advanced document workflows, and more.',
-  },
-};
-
 export function UpgradeModal({ reason, onClose }: UpgradeModalProps) {
-  const { title, message } = CONTENT[reason];
+  const { t } = useRole();
+
+  const titleKey = `upgrade_${reason}_title` as const;
+  const messageKey = `upgrade_${reason}_message` as const;
+
+  const features = [
+    t('upgrade_feature_groups'),
+    t('upgrade_feature_storage'),
+    t('upgrade_feature_esign'),
+    t('upgrade_feature_support'),
+  ] as const;
+
   return (
     <div className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-2xl w-[460px] p-8 flex flex-col items-center text-center relative">
@@ -42,14 +36,14 @@ export function UpgradeModal({ reason, onClose }: UpgradeModalProps) {
           <span className="text-2xl">🚀</span>
         </div>
 
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">{title}</h2>
-        <p className="text-sm text-gray-500 mb-2 leading-relaxed">{message}</p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t(titleKey)}</h2>
+        <p className="text-sm text-gray-500 mb-2 leading-relaxed">{t(messageKey)}</p>
 
         {/* Plan comparison hint */}
         <div className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl px-5 py-4 mb-6 text-left">
-          <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">Enterprise tier includes</p>
+          <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">{t('upgrade_tier_header')}</p>
           <ul className="space-y-1">
-            {['Unlimited groups', 'Expanded storage quota', 'E-Sign & document workflows', 'Priority support'].map((item) => (
+            {features.map((item) => (
               <li key={item} className="flex items-center gap-2 text-sm text-gray-700">
                 <span className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                   <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,13 +61,13 @@ export function UpgradeModal({ reason, onClose }: UpgradeModalProps) {
             onClick={onClose}
             className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
           >
-            Maybe Later
+            {t('upgrade_btn_later')}
           </button>
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
           >
-            Upgrade to Enterprise
+            {t('upgrade_btn_upgrade')}
           </button>
         </div>
       </div>

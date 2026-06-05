@@ -11,7 +11,14 @@
       "WebFetch(domain:edgeone.ai)",
       "WebFetch(domain:pre-pages.edgeone.ai)",
       "Bash(pnpm build *)",
-      "Bash(pnpm install *)"
+      "Bash(pnpm install *)",
+      "Bash(./node_modules/.bin/tsc --noEmit --skipLibCheck)",
+      "Bash(npx vite *)",
+      "Bash(sed -i '' '298s/》《Privacy Policy》/{t\\('\\\\''invite_privacy_policy'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
+      "Bash(sed -i '' '300s/》《Terms of Service》/{t\\('\\\\''invite_terms_of_service'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
+      "Bash(perl -i -pe 's/\\\\x{300a}Privacy Policy\\\\x{300b}/{t\\('\\\\''invite_privacy_policy'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
+      "Bash(perl -i -pe 's/\\\\x{300a}Terms of Service\\\\x{300b}/{t\\('\\\\''invite_terms_of_service'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

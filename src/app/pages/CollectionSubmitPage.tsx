@@ -2,6 +2,7 @@ import { CheckCircle, ChevronDown, Layers, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { fileBlobUrls } from '../context/fileBlobStore';
+import { createT, getStoredLanguage } from '../i18n';
 import type { CollectionItem } from './FileCollectionPage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -154,22 +155,22 @@ function FileIcon({ mimeType }: { mimeType: string }) {
 }
 
 // ─── Shared header ────────────────────────────────────────────────────────────
-function Header({ userEmail }: { userEmail?: string }) {
+function Header({ userEmail, t }: { userEmail?: string; t: (key: string, params?: Record<string, string | number>) => string }) {
   return (
     <header className="bg-white border-b border-gray-200 flex-shrink-0 z-10">
       <div className="px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <EducationIcon />
-          <span className="text-base font-bold text-gray-900 tracking-wide">Education Drive</span>
+          <span className="text-base font-bold text-gray-900 tracking-wide">{t('app_name')}</span>
         </div>
         <nav className="flex items-center gap-5">
-          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">Client Download</a>
+          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_client_download')}</a>
           <span className="text-gray-300 select-none">|</span>
-          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">TCED Website</a>
+          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_tced_website')}</a>
           {!userEmail && (
             <>
               <span className="text-gray-300 select-none">|</span>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-600">Registration</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_registration')}</a>
             </>
           )}
           {userEmail ? (
@@ -181,7 +182,7 @@ function Header({ userEmail }: { userEmail?: string }) {
             </div>
           ) : (
             <button className="ml-2 px-5 py-1.5 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
-              Login
+              {t('invite_login')}
             </button>
           )}
           <button className="ml-1 px-2 py-1 text-xs border border-gray-300 rounded text-gray-500 hover:bg-gray-50">
@@ -202,15 +203,16 @@ const gridBg: React.CSSProperties = {
 
 // ─── Persona options ──────────────────────────────────────────────────────────
 const PERSONA_OPTIONS = [
-  { value: 'guest', label: 'Guest' },
-  { value: 'teacher', label: 'Teacher — xiewenkai' },
-  { value: 'student', label: 'Student — wangyifei' },
+  { value: 'guest', labelKey: 'persona_guest' },
+  { value: 'teacher', labelKey: 'persona_teacher' },
+  { value: 'student', labelKey: 'persona_student' },
 ];
 
 // ─── Verify modal ─────────────────────────────────────────────────────────────
-function VerifyModal({ onVerify, onClose }: {
+function VerifyModal({ onVerify, onClose, t }: {
   onVerify: (email: string, persona: string) => void;
   onClose: () => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -237,16 +239,16 @@ function VerifyModal({ onVerify, onClose }: {
         <div className="flex flex-col items-center mb-7">
           <div className="flex items-center gap-2 mb-5">
             <EducationIcon />
-            <span className="text-lg font-bold text-gray-900">Education Drive</span>
+            <span className="text-lg font-bold text-gray-900">{t('app_name')}</span>
           </div>
-          <h2 className="text-base font-semibold text-gray-800">Please verify your email address</h2>
+          <h2 className="text-base font-semibold text-gray-800">{t('invite_verify_email')}</h2>
         </div>
         {/* Email */}
         <input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          placeholder="Enter email address"
+          placeholder={t('invite_email_placeholder')}
           className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
         {/* Email code */}
@@ -255,7 +257,7 @@ function VerifyModal({ onVerify, onClose }: {
             type="text"
             value={code}
             onChange={e => setCode(e.target.value)}
-            placeholder="Email code"
+            placeholder={t('invite_code_placeholder')}
             className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <button
@@ -267,7 +269,7 @@ function VerifyModal({ onVerify, onClose }: {
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {codeSent ? 'Sent ✓' : 'Send'}
+            {codeSent ? t('invite_sent') : t('invite_send')}
           </button>
         </div>
         {/* Persona */}
@@ -278,7 +280,7 @@ function VerifyModal({ onVerify, onClose }: {
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
           >
             {PERSONA_OPTIONS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>{t(o.labelKey)}</option>
             ))}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -287,15 +289,15 @@ function VerifyModal({ onVerify, onClose }: {
         <div className="space-y-2.5 mb-6">
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" checked={keepLoggedIn} onChange={e => setKeepLoggedIn(e.target.checked)} className="w-4 h-4 accent-blue-600" />
-            <span className="text-sm text-gray-600">Keep logged in for 1 day</span>
+            <span className="text-sm text-gray-600">{t('invite_keep_logged_in')}</span>
           </label>
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input type="checkbox" checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} className="w-4 h-4 accent-blue-600" />
             <span className="text-sm text-gray-600">
               Agree to 
-              <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>《Privacy Policy》</a>
+              <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>{t('invite_privacy_policy')}</a>
                
-              <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>《Terms of Service》</a>
+              <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>{t('invite_terms_of_service')}</a>
             </span>
           </label>
         </div>
@@ -307,7 +309,7 @@ function VerifyModal({ onVerify, onClose }: {
             canVerify ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-300 text-white cursor-not-allowed'
           }`}
         >
-          Verify
+          {t('invite_verify')}
         </button>
       </div>
     </div>
@@ -315,10 +317,10 @@ function VerifyModal({ onVerify, onClose }: {
 }
 
 // ─── Landing view ─────────────────────────────────────────────────────────────
-function LandingView({ item, onLoginClick }: { item: CollectionItem | null; onLoginClick: () => void }) {
+function LandingView({ item, onLoginClick, t }: { item: CollectionItem | null; onLoginClick: () => void; t: (key: string, params?: Record<string, string | number>) => string }) {
   return (
     <div className="min-h-screen flex flex-col" style={gridBg}>
-      <Header loggedIn={false} />
+      <Header t={t} />
       <div className="flex-1 flex items-center justify-center py-16 px-4">
         {item ? (
           <div className="bg-white rounded-2xl shadow-xl px-10 py-10 w-full max-w-md flex flex-col items-center text-center">
@@ -329,11 +331,11 @@ function LandingView({ item, onLoginClick }: { item: CollectionItem | null; onLo
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">{item.title}</h2>
             <p className="text-sm text-gray-500 mb-6">
-              {item.creator ?? 'user'} created &nbsp;|&nbsp; {expiryDisplay(item)}
+              {item.creator ?? 'user'} {t('created_label')} &nbsp;|&nbsp; {expiryDisplay(item)}
             </p>
             <div className="w-full text-left border border-gray-200 rounded-lg px-4 py-3 mb-7 bg-gray-50">
               <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                <li>Naming rules: {namingRulesText(item)}</li>
+                <li>{t('collection_naming_rules', { value: namingRulesText(item) })}</li>
               </ul>
             </div>
             <div className="flex gap-3 w-full">
@@ -348,8 +350,8 @@ function LandingView({ item, onLoginClick }: { item: CollectionItem | null; onLo
         ) : (
           <div className="bg-white rounded-2xl shadow-xl px-10 py-12 w-full max-w-sm flex flex-col items-center text-center">
             <div className="text-4xl mb-4">🔗</div>
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Collection not found</h2>
-            <p className="text-sm text-gray-500">This collection link may have expired or been removed.</p>
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">{t('collection_not_found')}</h2>
+            <p className="text-sm text-gray-500">{t('collection_not_found_msg')}</p>
           </div>
         )}
       </div>
@@ -358,7 +360,7 @@ function LandingView({ item, onLoginClick }: { item: CollectionItem | null; onLo
 }
 
 // ─── Workspace view ───────────────────────────────────────────────────────────
-function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userEmail: string }) {
+function WorkspaceView({ item, userEmail, t }: { item: CollectionItem | null; userEmail: string; t: (key: string, params?: Record<string, string | number>) => string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [submittedMeta, setSubmittedMeta] = useState<SubmittedFileMeta[]>([]);
@@ -414,10 +416,10 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
   if (!item) {
     return (
       <div className="min-h-screen flex flex-col" style={gridBg}>
-        <Header userEmail={userEmail} />
+        <Header userEmail={userEmail} t={t} />
         <div className="flex-1 flex items-center justify-center">
           <div className="bg-white rounded-2xl shadow-xl p-10 text-center">
-            <p className="text-gray-500">Collection not found.</p>
+            <p className="text-gray-500">{t('collection_not_found')}.</p>
           </div>
         </div>
       </div>
@@ -428,13 +430,13 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
 
   return (
     <div className="min-h-screen flex flex-col" style={gridBg}>
-      <Header userEmail={userEmail} />
+      <Header userEmail={userEmail} t={t} />
 
       {/* Upload success toast */}
       {showToast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 bg-white border border-green-200 shadow-lg rounded-full px-5 py-3 animate-fade-in">
           <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-          <span className="text-sm font-medium text-gray-800">File upload successful!</span>
+          <span className="text-sm font-medium text-gray-800">{t('submit_toast')}</span>
           <button onClick={() => setShowToast(false)} className="ml-1 text-gray-400 hover:text-gray-600">
             <X className="w-4 h-4" />
           </button>
@@ -452,7 +454,7 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
           <div>
             <h1 className="text-lg font-bold text-gray-900">{item.title}</h1>
             <p className="text-xs text-gray-500">
-              {item.creator ?? 'user'} created &nbsp;|&nbsp; {expiryDisplay(item)}
+              {item.creator ?? 'user'} {t('created_label')} &nbsp;|&nbsp; {expiryDisplay(item)}
             </p>
           </div>
         </div>
@@ -482,16 +484,16 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
       <div className="flex-1 flex overflow-auto">
         {/* Left panel */}
         <div className="w-[320px] flex-shrink-0 bg-white border-r border-gray-200 overflow-y-auto px-6 py-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Collection requirements</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-4">{t('collection_requirements')}</h3>
           <div className="border border-gray-200 rounded-lg px-4 py-3 bg-gray-50 mb-6">
             <ul className="text-sm text-gray-700 space-y-2">
               <li className="flex gap-2">
                 <span className="text-gray-400 flex-shrink-0">•</span>
-                <span>Naming rules: {namingRulesText(item)}</span>
+                <span>{t("collection_naming_rules", { value: namingRulesText(item) })}</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-400 flex-shrink-0">•</span>
-                <span>Format requirements: {formatReqText(item)}</span>
+                <span>{t("collection_format_req", { value: formatReqText(item) })}</span>
               </li>
             </ul>
           </div>
@@ -502,7 +504,7 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
                 type="text"
                 value={formFields[field] ?? ''}
                 onChange={e => setFormFields(prev => ({ ...prev, [field]: e.target.value }))}
-                placeholder="Required field"
+                placeholder={t('collection_required_field')}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -518,13 +520,13 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
                 onClick={() => setActiveTab('pending')}
                 className={`px-1 py-3 text-sm font-medium border-b-2 mr-8 transition-colors whitespace-nowrap ${activeTab === 'pending' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
               >
-                To be submitted ({pendingFiles.length} / {remaining})
+                {t("submit_tab_pending", { pending: pendingFiles.length, remaining })}
               </button>
               <button
                 onClick={() => setActiveTab('submitted')}
                 className={`px-1 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'submitted' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
               >
-                My submission ({submittedMeta.length})
+                {t("submit_tab_submitted", { count: submittedMeta.length })}
               </button>
             </div>
           </div>
@@ -560,7 +562,7 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
                     <svg className="w-16 h-16 text-green-500" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                     </svg>
-                    <p className="text-sm text-gray-500">Submission successful</p>
+                    <p className="text-sm text-gray-500">{t('submit_success')}</p>
                     <p className="text-sm">
                       <button onClick={continueUploading} className="text-blue-600 hover:underline font-medium">
                         Continue uploading
@@ -581,10 +583,10 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>
                     <p className="text-sm text-gray-500">
-                      <span className="text-blue-600 font-medium">Click to add</span>
+                      <span className="text-blue-600 font-medium">{t('submit_click_to_add')}</span>
                       <span className="text-gray-400"> &nbsp;/&nbsp; Drop to this area</span>
                     </p>
-                    <p className="text-xs text-gray-400">Limit {remaining} files, folder upload is not supported</p>
+                    <p className="text-xs text-gray-400">{t("submit_limit_files", { n: remaining })}</p>
                   </div>
                 )}
               </>
@@ -596,7 +598,7 @@ function WorkspaceView({ item, userEmail }: { item: CollectionItem | null; userE
                   <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
-                  <span className="text-sm">No submitted files yet</span>
+                  <span className="text-sm">{t('submit_no_submitted')}</span>
                 </div>
               ) : (
                 <div className="space-y-0 border border-gray-200 rounded-lg overflow-hidden">
@@ -639,6 +641,7 @@ export function CollectionSubmitPage() {
   const item = id ? findCollection(id) : null;
   const [pageState, setPageState] = useState<'landing' | 'verify' | 'workspace'>('landing');
   const [userEmail, setUserEmail] = useState('');
+  const t = createT(getStoredLanguage());
 
   function handleVerify(email: string, _persona: string) {
     setUserEmail(email);
@@ -646,13 +649,13 @@ export function CollectionSubmitPage() {
   }
 
   if (pageState === 'workspace') {
-    return <WorkspaceView item={item} userEmail={userEmail} />;
+    return <WorkspaceView item={item} userEmail={userEmail} t={t} />;
   }
   return (
     <>
-      <LandingView item={item} onLoginClick={() => setPageState('verify')} />
+      <LandingView item={item} onLoginClick={() => setPageState('verify')} t={t} />
       {pageState === 'verify' && (
-        <VerifyModal onVerify={handleVerify} onClose={() => setPageState('landing')} />
+        <VerifyModal onVerify={handleVerify} onClose={() => setPageState('landing')} t={t} />
       )}
     </>
   );

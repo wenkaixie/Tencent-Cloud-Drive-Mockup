@@ -91,7 +91,7 @@ function normalizeFiles(raw: unknown): PersonalFile[] {
 const STORAGE_KEY = 'personal-files';
 
 export function PersonalPage() {
-  const { role, storageKey } = useRole();
+  const { role, storageKey, t } = useRole();
   const PERSONAL_STORAGE_KEY = storageKey(STORAGE_KEY);
 
   const [files, setFiles] = useState<PersonalFile[]>(() => {
@@ -216,7 +216,7 @@ export function PersonalPage() {
   }
 
   const selectedFile = files.find((f) => f.id === selectedFileId) || null;
-  const nameHint = `Name doesn't support characters "\\/:*?"<>|", word count no more than 255 characters`;
+  const nameHint = t('hint_name_255');
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white">
@@ -225,7 +225,7 @@ export function PersonalPage() {
 
       <div className="border-b border-gray-200 px-6 py-4">
         <div className="mb-4">
-          <h1 className="text-xl font-semibold text-gray-900 leading-tight">Personal</h1>
+          <h1 className="text-xl font-semibold text-gray-900 leading-tight">{t('page_personal')}</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -235,15 +235,15 @@ export function PersonalPage() {
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
             >
               <Upload className="w-4 h-4" />
-              <span>Upload</span>
+              <span>{t('btn_upload')}</span>
             </button>
             {uploadOpen && (
               <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
                 <button onClick={triggerFileUpload} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <FileText className="w-5 h-5 text-blue-500" /> Upload File
+                  <FileText className="w-5 h-5 text-blue-500" /> {t('upload_file')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <Folder className="w-5 h-5 text-blue-600" /> Upload Folder
+                  <Folder className="w-5 h-5 text-blue-600" /> {t('upload_folder')}
                 </button>
               </div>
             )}
@@ -255,22 +255,22 @@ export function PersonalPage() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
-              <span>New</span>
+              <span>{t('btn_new')}</span>
             </button>
             {newOpen && (
               <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <FileText className="w-5 h-5 text-blue-500" /> New Document
+                  <FileText className="w-5 h-5 text-blue-500" /> {t('new_document')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <Grid className="w-5 h-5 text-green-500" /> New Form
+                  <Grid className="w-5 h-5 text-green-500" /> {t('new_form')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <Monitor className="w-5 h-5 text-orange-400" /> New Presentation
+                  <Monitor className="w-5 h-5 text-orange-400" /> {t('new_presentation')}
                 </button>
                 <div className="border-t border-gray-100 my-1" />
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                  <FileInput className="w-5 h-5 text-yellow-500" /> Import Template
+                  <FileInput className="w-5 h-5 text-yellow-500" /> {t('import_template')}
                 </button>
               </div>
             )}
@@ -278,53 +278,54 @@ export function PersonalPage() {
 
           {files.length > 0 && (
             <>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium">
-                <Download className="w-4 h-4" /> Download
+              <button
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium">
+                <Download className="w-4 h-4" /> {t('btn_download')}
               </button>
               <button
                 onClick={() => { if (selectedFile) openShare(selectedFile); }}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
               >
-                Share
+                {t('btn_share')}
               </button>
               <div className="relative" ref={topMoreRef}>
                 <button
                   onClick={() => setTopMoreOpen((p) => !p)}
                   className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
                 >
-                  More <ChevronDown className="w-4 h-4" />
+                  {t('btn_more')} <ChevronDown className="w-4 h-4" />
                 </button>
                 {topMoreOpen && (
                   <div className="absolute left-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1">
-                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Preview</button>
+                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_preview')}</button>
                     <button
                       onClick={() => { if (selectedFile) toggleStar(selectedFile.id); setTopMoreOpen(false); }}
                       className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                     >
-                      <span>Starred</span><span className="text-xs text-gray-400">⌘+B</span>
+                      <span>{t('menu_starred')}</span><span className="text-xs text-gray-400">⌘+B</span>
                     </button>
-                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Edit</button>
+                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_edit')}</button>
                     <button
                       onClick={() => { if (selectedFile) openRename(selectedFile); }}
                       className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                     >
-                      <span>Rename</span><span className="text-xs text-gray-400">⌘+G</span>
+                      <span>{t('menu_rename')}</span><span className="text-xs text-gray-400">⌘+G</span>
                     </button>
                     <button
                       onClick={() => { if (selectedFile) openDelete(selectedFile); }}
                       className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
                     >
-                      <span>Delete</span><span className="text-xs text-gray-400">Del</span>
+                      <span>{t('menu_delete')}</span><span className="text-xs text-gray-400">Del</span>
                     </button>
                     <div className="border-t border-gray-100 my-1" />
                     <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">
-                      <span>Move to</span><span className="text-xs text-gray-400">⌘+X</span>
+                      <span>{t('menu_move_to')}</span><span className="text-xs text-gray-400">⌘+X</span>
                     </button>
                     <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">
-                      <span>Copy to</span><span className="text-xs text-gray-400">⌘+C</span>
+                      <span>{t('menu_copy_to')}</span><span className="text-xs text-gray-400">⌘+C</span>
                     </button>
                     <div className="border-t border-gray-100 my-1" />
-                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Tag Management</button>
+                    <button onClick={() => setTopMoreOpen(false)} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_tag_management')}</button>
                   </div>
                 )}
               </div>
@@ -360,10 +361,10 @@ export function PersonalPage() {
                   onClick={triggerFileUpload}
                   className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
                 >
-                  Upload File
+                  {t('upload_file')}
                 </button>
                 <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                  Upload Folder
+                  {t('upload_folder')}
                 </button>
               </div>
             </div>
@@ -379,17 +380,17 @@ export function PersonalPage() {
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Name <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_name')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 w-56">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Last modified <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_last_modified')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 w-32">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Size <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_size')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="w-32" />
@@ -449,35 +450,35 @@ export function PersonalPage() {
                               </button>
                               {moreMenuFileId === file.id && (
                                 <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1">
-                                  <button onClick={(e) => { e.stopPropagation(); setMoreMenuFileId(null); }} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Preview</button>
-                                  <button onClick={(e) => { e.stopPropagation(); setMoreMenuFileId(null); }} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Edit</button>
+                                  <button onClick={(e) => { e.stopPropagation(); setMoreMenuFileId(null); }} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_preview')}</button>
+                                  <button onClick={(e) => { e.stopPropagation(); setMoreMenuFileId(null); }} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_edit')}</button>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); openRename(file); }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Rename</span><span className="text-xs text-gray-400">⌘+G</span>
+                                    <span>{t('menu_rename')}</span><span className="text-xs text-gray-400">⌘+G</span>
                                   </button>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); toggleStar(file.id); setMoreMenuFileId(null); }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Starred</span><span className="text-xs text-gray-400">⌘+B</span>
+                                    <span>{t('menu_starred')}</span><span className="text-xs text-gray-400">⌘+B</span>
                                   </button>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); openDelete(file); }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
                                   >
-                                    <span>Delete</span><span className="text-xs text-gray-400">Del</span>
+                                    <span>{t('menu_delete')}</span><span className="text-xs text-gray-400">Del</span>
                                   </button>
                                   <div className="border-t border-gray-100 my-1" />
                                   <button onClick={(e) => e.stopPropagation()} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">
-                                    <span>Move to</span><span className="text-xs text-gray-400">⌘+X</span>
+                                    <span>{t('menu_move_to')}</span><span className="text-xs text-gray-400">⌘+X</span>
                                   </button>
                                   <button onClick={(e) => e.stopPropagation()} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">
-                                    <span>Copy to</span><span className="text-xs text-gray-400">⌘+C</span>
+                                    <span>{t('menu_copy_to')}</span><span className="text-xs text-gray-400">⌘+C</span>
                                   </button>
                                   <div className="border-t border-gray-100 my-1" />
-                                  <button onClick={(e) => e.stopPropagation()} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">Tag Management</button>
+                                  <button onClick={(e) => e.stopPropagation()} className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700">{t('menu_tag_management')}</button>
                                 </div>
                               )}
                             </div>
@@ -491,10 +492,10 @@ export function PersonalPage() {
             </div>
 
             <div className="pt-4 px-6 pb-4 flex items-center justify-between text-sm text-gray-500">
-              <span>{files.length} items</span>
+              <span>{t('footer_items', { n: String(files.length) })}</span>
               <div className="flex items-center gap-3">
                 <select className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-600">
-                  <option>20 / page</option>
+                  <option>{t('pagination_20_page')}</option>
                 </select>
                 <button className="text-gray-300">‹</button>
                 <button className="w-8 h-8 rounded bg-blue-600 text-white text-sm">1</button>
@@ -510,7 +511,7 @@ export function PersonalPage() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[480px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Rename</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('rename_modal_title')}</h2>
               <button onClick={() => setRenameTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -528,8 +529,8 @@ export function PersonalPage() {
             </div>
             <p className="text-xs text-gray-400 mb-6">{nameHint}</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setRenameTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">Cancel</button>
-              <button onClick={confirmRename} className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">OK</button>
+              <button onClick={() => setRenameTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">{t('btn_cancel')}</button>
+              <button onClick={confirmRename} className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">{t('btn_ok')}</button>
             </div>
           </div>
         </div>
@@ -544,17 +545,17 @@ export function PersonalPage() {
                 <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
                   <AlertCircle className="w-5 h-5 text-orange-500" />
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">Prompt</h2>
+                <h2 className="text-base font-semibold text-gray-900">{t('delete_modal_title')}</h2>
               </div>
               <button onClick={() => setDeleteTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
-            <p className="text-gray-900 font-semibold mb-1 ml-12">{`Sure you want to delete "${deleteTarget.name}"?`}</p>
-            <p className="text-gray-500 text-sm mb-6 ml-12">The file will be moved to Mnemonic Recovery. You can retrieve it from Deletion Restore.</p>
+            <p className="text-gray-900 font-semibold mb-1 ml-12">{t('delete_confirm', { name: deleteTarget.name })}</p>
+            <p className="text-gray-500 text-sm mb-6 ml-12">{t('delete_file_msg')}</p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">Cancel</button>
-              <button onClick={confirmDelete} className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">Confirm</button>
+              <button onClick={() => setDeleteTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">{t('btn_cancel')}</button>
+              <button onClick={confirmDelete} className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">{t('btn_confirm')}</button>
             </div>
           </div>
         </div>
@@ -565,52 +566,52 @@ export function PersonalPage() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[520px] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">Share file/folder</h2>
+              <h2 className="text-base font-semibold text-gray-900">{t('share_modal_title')}</h2>
               <button onClick={() => setShareTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
             <div className="flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 mb-4">
               <AlertCircle className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-orange-600">Important or private files with care when sharing. Sharing on the internet must comply with relevant laws and regulations, and may incur legal responsibilities.</p>
+              <p className="text-xs text-orange-600">{t('share_warning')}</p>
             </div>
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3 mb-5">
               <FileText className={`w-8 h-8 flex-shrink-0 ${getFileIconTint(shareTarget.name)}`} />
               <div>
                 <div className="text-sm font-medium text-gray-900">{shareTarget.name}</div>
-                <div className="text-xs text-gray-400">{shareTarget.createdAt} created by {role === 'teacher' ? 'xiewenkai' : 'wangyifei'}</div>
+                <div className="text-xs text-gray-400">{shareTarget.createdAt} {t('share_created_by')} {role === 'teacher' ? 'xiewenkai' : 'wangyifei'}</div>
               </div>
             </div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Access permission</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('share_access_permission')}</p>
             <div className="space-y-2 mb-5">
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={sharePreview} onChange={(e) => setSharePreview(e.target.checked)} className="rounded" />
-                <span className="w-20">Preview</span>
-                <span className="text-gray-400 text-xs">Number of previews</span>
-                <input type="text" placeholder="please enter" className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
+                <span className="w-20">{t('share_preview')}</span>
+                <span className="text-gray-400 text-xs">{t('share_preview_count')}</span>
+                <input type="text" placeholder={t('placeholder_please_enter')} className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareDownload} onChange={(e) => setShareDownload(e.target.checked)} className="rounded" />
-                <span className="w-20">Download</span>
-                <span className="text-gray-400 text-xs">Number of downloads</span>
-                <input type="text" placeholder="please enter" className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
+                <span className="w-20">{t('share_download')}</span>
+                <span className="text-gray-400 text-xs">{t('share_download_count')}</span>
+                <input type="text" placeholder={t('placeholder_please_enter')} className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareSave} onChange={(e) => setShareSave(e.target.checked)} className="rounded" />
-                <span>Save to Education Drive</span>
+                <span>{t('share_save_to_drive')}</span>
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareEdit} onChange={(e) => setShareEdit(e.target.checked)} className="rounded" />
-                <span>Edit (Login required)</span>
+                <span>{t('share_edit_login')}</span>
               </label>
             </div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Expiration date</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('share_expiry_date')}</p>
             <div className="flex items-center gap-4 mb-2">
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="radio" checked={shareExpiry === 'expired'} onChange={() => setShareExpiry('expired')} /> Expired on
+                <input type="radio" checked={shareExpiry === 'expired'} onChange={() => setShareExpiry('expired')} /> {t('share_expired_on')}
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="radio" checked={shareExpiry === 'permanent'} onChange={() => setShareExpiry('permanent')} /> Permanent validity
+                <input type="radio" checked={shareExpiry === 'permanent'} onChange={() => setShareExpiry('permanent')} /> {t('share_permanent')}
               </label>
             </div>
             {shareExpiry === 'expired' && (
@@ -619,20 +620,20 @@ export function PersonalPage() {
                   <span>{shareExpiryDate}</span>
                   <Calendar className="w-4 h-4 text-gray-400" />
                 </div>
-                <span className="text-xs text-gray-400">Expired in 7 days</span>
+                <span className="text-xs text-gray-400">{t('share_expired_7_days')}</span>
               </div>
             )}
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Security</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('share_security')}</p>
             <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer mb-5">
               <input type="checkbox" checked={shareUseCode} onChange={(e) => setShareUseCode(e.target.checked)} className="rounded" />
-              <span>Set extraction code</span>
+              <span>{t('share_extraction_code')}</span>
               {shareUseCode && (
                 <input type="text" defaultValue={shareCode} className="border border-gray-300 rounded px-3 py-1 text-sm w-24 font-mono" />
               )}
             </label>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShareTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">Cancel</button>
-              <button className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">Create link</button>
+              <button onClick={() => setShareTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">{t('btn_cancel')}</button>
+              <button className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">{t('btn_create_link')}</button>
             </div>
           </div>
         </div>

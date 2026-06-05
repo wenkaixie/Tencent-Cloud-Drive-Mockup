@@ -11,7 +11,7 @@ import {
 } from './ui/dropdown-menu';
 
 export function TopBar() {
-  const { role, basePath } = useRole();
+  const { role, basePath, language, setLanguage, t } = useRole();
   const navigate = useNavigate();
   const [showESignUpgrade, setShowESignUpgrade] = useState(false);
 
@@ -36,7 +36,7 @@ export function TopBar() {
               : 'bg-emerald-50 text-emerald-700 border-emerald-200'
           }`}
         >
-          {role === 'teacher' ? '🎓 Teacher View' : '📚 Student View'}
+          {role === 'teacher' ? t('topbar_teacher_view') : t('topbar_student_view')}
         </span>
         <button
           onClick={goToSplitView}
@@ -44,17 +44,23 @@ export function TopBar() {
           title="View Teacher and Student side by side"
         >
           <Columns2 className="w-3.5 h-3.5" />
-          Side by Side
+          {t('topbar_side_by_side')}
         </button>
       </div>
 
-      {/* Right: existing buttons */}
+      {/* Right: language toggle + existing buttons */}
       <div className="flex items-center gap-3">
+        <button
+          onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+          className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
+        >
+          {language === 'en' ? t('topbar_lang_zh') : t('topbar_lang_en')}
+        </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
               <Briefcase className="w-4 h-4 text-gray-600" />
-              <span>Tool</span>
+              <span>{t('topbar_tool')}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -62,7 +68,7 @@ export function TopBar() {
               <span className="w-7 h-7 rounded flex items-center justify-center bg-green-500">
                 <PenLine className="w-4 h-4 text-white" />
               </span>
-              <span className="text-sm">E-Sign</span>
+              <span className="text-sm">{t('topbar_esign')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center gap-3 py-2.5 cursor-pointer"
@@ -71,7 +77,7 @@ export function TopBar() {
               <span className="w-7 h-7 rounded flex items-center justify-center bg-blue-500">
                 <FolderOpen className="w-4 h-4 text-white" />
               </span>
-              <span className="text-sm">File Collection</span>
+              <span className="text-sm">{t('topbar_file_collection')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

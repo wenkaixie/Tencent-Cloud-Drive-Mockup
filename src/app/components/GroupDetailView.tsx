@@ -186,7 +186,7 @@ function getBreadcrumbFolders(
 
 export function GroupDetailView() {
   const navigate = useNavigate();
-  const { role, storageKey, sharedKey, basePath } = useRole();
+  const { role, storageKey, sharedKey, basePath, t } = useRole();
   const { groupId, '*': splatPath } = useParams();
   const pathSegments = (splatPath ?? '').split('/').filter(Boolean);
   const location = useLocation();
@@ -238,10 +238,10 @@ export function GroupDetailView() {
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
   const [newFolderModalOpen, setNewFolderModalOpen] = useState(false);
-  const [folderInput, setFolderInput] = useState('New Folder');
+  const [folderInput, setFolderInput] = useState(t('default_new_folder'));
 
   const [newGroupModalOpen, setNewGroupModalOpen] = useState(false);
-  const [groupInput, setGroupInput] = useState('New Group');
+  const [groupInput, setGroupInput] = useState(t('modal_new_group_title'));
 
   const [moreMenuItemKey, setMoreMenuItemKey] = useState<string | null>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
@@ -308,13 +308,13 @@ export function GroupDetailView() {
 
   function openNewFolderModal() {
     setNewOpen(false);
-    setFolderInput('New Folder');
+    setFolderInput(t('default_new_folder'));
     setNewFolderModalOpen(true);
   }
 
   function openNewGroupModal() {
     setNewOpen(false);
-    setGroupInput('New Group');
+    setGroupInput(t('modal_new_group_title'));
     setNewGroupModalOpen(true);
   }
 
@@ -710,7 +710,7 @@ export function GroupDetailView() {
     );
   }
 
-  const nameHint = `Name doesn't support characters "\\/:*?"<>|", word count no more than 255 characters`;
+  const nameHint = t('hint_name_255');
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white">
@@ -729,7 +729,7 @@ export function GroupDetailView() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button onClick={() => navigate(`${basePath}/group`)} className="text-gray-400 hover:text-gray-600">
-            Group
+            {t('breadcrumb_group')}
           </button>
           <span className="text-gray-400">›</span>
           <button
@@ -766,7 +766,7 @@ export function GroupDetailView() {
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
             >
               <Upload className="w-4 h-4" />
-              <span>Upload</span>
+              <span>{t('btn_upload')}</span>
             </button>
             {uploadOpen && (
               <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
@@ -775,11 +775,11 @@ export function GroupDetailView() {
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700"
                 >
                   <FileText className="w-5 h-5 text-blue-500" />
-                  Upload File
+                  {t('dropdown_upload_file')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                   <Folder className="w-5 h-5 text-blue-600" />
-                  Upload Folder
+                  {t('dropdown_upload_folder')}
                 </button>
               </div>
             )}
@@ -796,7 +796,7 @@ export function GroupDetailView() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
-              <span>New</span>
+              <span>{t('btn_new')}</span>
             </button>
             {newOpen && (
               <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
@@ -805,25 +805,25 @@ export function GroupDetailView() {
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700"
                 >
                   <Folder className="w-5 h-5 text-blue-600" />
-                  New Folder
+                  {t('dropdown_new_folder')}
                 </button>
                 <div className="border-t border-gray-100 my-1" />
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                   <FileText className="w-5 h-5 text-blue-500" />
-                  New Document
+                  {t('dropdown_new_document')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                   <Grid className="w-5 h-5 text-green-500" />
-                  New Form
+                  {t('dropdown_new_form')}
                 </button>
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                   <Monitor className="w-5 h-5 text-orange-400" />
-                  New Presentation
+                  {t('dropdown_new_presentation')}
                 </button>
                 <div className="border-t border-gray-100 my-1" />
                 <button className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
                   <FileInput className="w-5 h-5 text-yellow-500" />
-                  Import Template
+                  {t('dropdown_import_template')}
                 </button>
               </div>
             )}
@@ -840,7 +840,7 @@ export function GroupDetailView() {
                   className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download</span>
+                  <span>{t('btn_download')}</span>
                 </button>
                 )}
                 {effectivePerms.canShare && (
@@ -851,7 +851,7 @@ export function GroupDetailView() {
                   }}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
                 >
-                  Share
+                  {t('btn_share')}
                 </button>
                 )}
                 {(effectivePerms.canEdit || effectivePerms.canDelete) && (
@@ -860,7 +860,7 @@ export function GroupDetailView() {
                     onClick={() => setTopMoreOpen((prev) => !prev)}
                     className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium"
                   >
-                    More <ChevronDown className="w-4 h-4" />
+                    {t('btn_more')} <ChevronDown className="w-4 h-4" />
                   </button>
                   {topMoreOpen && (
                     <div className="absolute left-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1">
@@ -872,7 +872,7 @@ export function GroupDetailView() {
                         }}
                         className={`w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm ${selectedFile && fileBlobUrls.has(selectedFile.id) ? 'text-gray-700' : 'text-gray-400'}`}
                       >
-                        Preview{selectedFile && !fileBlobUrls.has(selectedFile.id) && <span className="ml-auto text-xs text-gray-400">(upload again)</span>}
+                        {t('menu_preview')}{selectedFile && !fileBlobUrls.has(selectedFile.id) && <span className="ml-auto text-xs text-gray-400">{t('menu_preview_unavailable')}</span>}
                       </button>
                       )}
                       {effectivePerms.canEdit && (
@@ -885,7 +885,7 @@ export function GroupDetailView() {
                         }}
                         className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        <span>Starred</span>
+                        <span>{t('menu_starred')}</span>
                         <span className="text-xs text-gray-400">⌘+B</span>
                       </button>
                       )}
@@ -896,7 +896,7 @@ export function GroupDetailView() {
                         }}
                         className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        Edit
+                        {t('menu_edit')}
                       </button>
                       )}
                       {effectivePerms.canEdit && (
@@ -909,7 +909,7 @@ export function GroupDetailView() {
                         }}
                         className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        <span>Rename</span>
+                        <span>{t('menu_rename')}</span>
                         <span className="text-xs text-gray-400">⌘+G</span>
                       </button>
                       )}
@@ -923,7 +923,7 @@ export function GroupDetailView() {
                         }}
                         className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
                       >
-                        <span>Delete</span>
+                        <span>{t('menu_delete')}</span>
                         <span className="text-xs text-gray-400">Del</span>
                       </button>
                       )}
@@ -934,14 +934,14 @@ export function GroupDetailView() {
                         onClick={() => setTopMoreOpen(false)}
                         className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        <span>Move to</span>
+                        <span>{t('menu_move_to')}</span>
                         <span className="text-xs text-gray-400">⌘+X</span>
                       </button>
                       <button
                         onClick={() => setTopMoreOpen(false)}
                         className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        <span>Copy to</span>
+                        <span>{t('menu_copy_to')}</span>
                         <span className="text-xs text-gray-400">⌘+C</span>
                       </button>
                       <div className="border-t border-gray-100 my-1" />
@@ -949,7 +949,7 @@ export function GroupDetailView() {
                         onClick={() => setTopMoreOpen(false)}
                         className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                       >
-                        Tag Management
+                        {t('menu_tag_management')}
                       </button>
                       </>
                       )}
@@ -974,7 +974,7 @@ export function GroupDetailView() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
             <Megaphone className="w-4 h-4 text-blue-500" />
-            <span>Announcement</span>
+            <span>{t('section_announcement')}</span>
           </div>
           {effectivePerms.isOwner && (
             <button
@@ -982,7 +982,7 @@ export function GroupDetailView() {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-xs font-medium"
             >
               <Plus className="w-3.5 h-3.5" />
-              New Announcement
+              {t('btn_new_announcement')}
             </button>
           )}
         </div>
@@ -993,7 +993,7 @@ export function GroupDetailView() {
           </div>
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-2">
-            <p className="text-sm text-gray-400 italic">No announcements yet</p>
+            <p className="text-sm text-gray-400 italic">{t('empty_no_announcements')}</p>
           </div>
         )}
         {announcements.length > 1 && (
@@ -1001,7 +1001,7 @@ export function GroupDetailView() {
             onClick={() => setPastAnnouncementsOpen(true)}
             className="text-xs text-blue-600 hover:underline font-medium"
           >
-            View Past Announcements ({announcements.length - 1} more)
+            {t('link_past_announcements', { count: String(announcements.length - 1) })}
           </button>
         )}
       </div>
@@ -1021,24 +1021,24 @@ export function GroupDetailView() {
                     <path d="M35 95 L50 85" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />
                   </svg>
                 </div>
-                <div className="text-gray-900 font-medium mb-2">No files found</div>
+                <div className="text-gray-900 font-medium mb-2">{t('empty_no_files_group')}</div>
                 {effectivePerms.canUpload ? (
                   <>
-                  <div className="text-gray-500 text-sm mb-6">Drag and drop file to upload</div>
+                  <div className="text-gray-500 text-sm mb-6">{t('empty_drag_drop')}</div>
                   <div className="flex items-center gap-3 justify-center">
                     <button
                       onClick={triggerFileUpload}
                       className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
                     >
-                      Upload File
+                      {t('upload_file')}
                     </button>
                     <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                      Upload Folder
+                      {t('upload_folder')}
                     </button>
                   </div>
                   </>
                 ) : (
-                  <div className="text-gray-400 text-sm">You have view-only access to this class.</div>
+                  <div className="text-gray-400 text-sm">{t('view_only_access')}</div>
                 )}
               </div>
             </div>
@@ -1053,17 +1053,17 @@ export function GroupDetailView() {
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Name <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_name')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 w-56">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Last modified <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_last_modified')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 w-28">
                       <button className="flex items-center gap-1 hover:text-gray-700">
-                        Size <ChevronsUpDown className="w-3.5 h-3.5" />
+                        {t('col_size')} <ChevronsUpDown className="w-3.5 h-3.5" />
                       </button>
                     </th>
                     <th className="w-32" />
@@ -1098,7 +1098,7 @@ export function GroupDetailView() {
                               : <Folder className="w-5 h-5 text-blue-600 fill-blue-600 flex-shrink-0" />}
                             <span className="text-gray-800">{folder.name}</span>
                             {folder.isGroup && (
-                              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-purple-600 bg-purple-50 border border-purple-200 rounded px-1.5 py-0.5 leading-none">Group</span>
+                              <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-purple-600 bg-purple-50 border border-purple-200 rounded px-1.5 py-0.5 leading-none">{t('badge_group')}</span>
                             )}
                           </button>
                           <button
@@ -1151,7 +1151,7 @@ export function GroupDetailView() {
                                     }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Rename</span>
+                                    <span>{t('menu_rename')}</span>
                                     <span className="text-xs text-gray-400">⌘+G</span>
                                   </button>
                                   )}
@@ -1164,7 +1164,7 @@ export function GroupDetailView() {
                                     }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Starred</span>
+                                    <span>{t('menu_starred')}</span>
                                     <span className="text-xs text-gray-400">⌘+B</span>
                                   </button>
                                   )}
@@ -1176,7 +1176,7 @@ export function GroupDetailView() {
                                     }}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
                                   >
-                                    <span>Delete</span>
+                                    <span>{t('menu_delete')}</span>
                                     <span className="text-xs text-gray-400">Del</span>
                                   </button>
                                   )}
@@ -1187,14 +1187,14 @@ export function GroupDetailView() {
                                     onClick={(event) => event.stopPropagation()}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Move to</span>
+                                    <span>{t('menu_move_to')}</span>
                                     <span className="text-xs text-gray-400">⌘+X</span>
                                   </button>
                                   <button
                                     onClick={(event) => event.stopPropagation()}
                                     className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    <span>Copy to</span>
+                                    <span>{t('menu_copy_to')}</span>
                                     <span className="text-xs text-gray-400">⌘+C</span>
                                   </button>
                                   <div className="border-t border-gray-100 my-1" />
@@ -1202,7 +1202,7 @@ export function GroupDetailView() {
                                     onClick={(event) => event.stopPropagation()}
                                     className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    Tag Management
+                                    {t('menu_tag_management')}
                                   </button>
                                   </>
                                   )}
@@ -1213,7 +1213,7 @@ export function GroupDetailView() {
                                     }}
                                     className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                   >
-                                    View details
+                                    {t('menu_view_details')}
                                   </button>
                                 </div>
                               )}
@@ -1229,10 +1229,10 @@ export function GroupDetailView() {
               </div>
 
               <div className="pt-4 px-6 flex items-center justify-between text-sm text-gray-500">
-                <span>{folders.length} items</span>
+                <span>{t('footer_items', { n: folders.length })}</span>
                 <div className="flex items-center gap-3">
                   <select className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-600">
-                    <option>20 / page</option>
+                    <option>{t('pagination_20_page')}</option>
                   </select>
                   <button className="text-gray-300">‹</button>
                   <button className="w-8 h-8 rounded bg-blue-600 text-white text-sm">1</button>
@@ -1254,24 +1254,24 @@ export function GroupDetailView() {
                   <path d="M35 95 L50 85" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               </div>
-              <div className="text-gray-900 font-medium mb-2">No files found</div>
+              <div className="text-gray-900 font-medium mb-2">{t('empty_no_files_group')}</div>
               {effectivePerms.canUpload ? (
                 <>
-                <div className="text-gray-500 text-sm mb-6">Drag and drop file to upload</div>
+                <div className="text-gray-500 text-sm mb-6">{t('empty_drag_drop')}</div>
                 <div className="flex items-center gap-3 justify-center">
                   <button
                     onClick={triggerFileUpload}
                     className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
                   >
-                    Upload File
+                    {t('upload_file')}
                   </button>
                   <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                    Upload Folder
+                    {t('upload_folder')}
                   </button>
                 </div>
                 </>
               ) : (
-                <div className="text-gray-400 text-sm">You have view-only access to this class.</div>
+                <div className="text-gray-400 text-sm">{t('view_only_access')}</div>
               )}
             </div>
           </div>
@@ -1286,17 +1286,17 @@ export function GroupDetailView() {
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-gray-500">
                     <button className="flex items-center gap-1 hover:text-gray-700">
-                      Name <ChevronsUpDown className="w-3.5 h-3.5" />
+                      {t('col_name')} <ChevronsUpDown className="w-3.5 h-3.5" />
                     </button>
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-gray-500 w-64">
                     <button className="flex items-center gap-1 hover:text-gray-700">
-                      Last modified <ChevronsUpDown className="w-3.5 h-3.5" />
+                      {t('col_last_modified')} <ChevronsUpDown className="w-3.5 h-3.5" />
                     </button>
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-gray-500 w-40">
                     <button className="flex items-center gap-1 hover:text-gray-700">
-                      Size <ChevronsUpDown className="w-3.5 h-3.5" />
+                      {t('col_size')} <ChevronsUpDown className="w-3.5 h-3.5" />
                     </button>
                   </th>
                   <th className="w-32" />
@@ -1346,9 +1346,9 @@ export function GroupDetailView() {
                             <button onClick={(e) => openMore(`folder:${subfolder.id}`, e)} className="p-1.5 hover:bg-white rounded border border-gray-200 text-gray-500 hover:text-gray-700"><MoreHorizontal className="w-4 h-4" /></button>
                             {moreMenuItemKey === `folder:${subfolder.id}` && (
                               <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1">
-                                {effectivePerms.canEdit && (<button onClick={(e) => { e.stopPropagation(); openRenameFolder(subfolder); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"><span>Rename</span><span className="text-xs text-gray-400">⌘+G</span></button>)}
-                                {effectivePerms.canEdit && (<button onClick={(e) => { e.stopPropagation(); toggleStar(subfolder.id); setMoreMenuItemKey(null); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"><span>Starred</span><span className="text-xs text-gray-400">⌘+B</span></button>)}
-                                {effectivePerms.canDelete && (<button onClick={(e) => { e.stopPropagation(); openDeleteFolder(subfolder); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"><span>Delete</span><span className="text-xs text-gray-400">Del</span></button>)}
+                                {effectivePerms.canEdit && (<button onClick={(e) => { e.stopPropagation(); openRenameFolder(subfolder); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"><span>{t('menu_rename')}</span><span className="text-xs text-gray-400">⌘+G</span></button>)}
+                                {effectivePerms.canEdit && (<button onClick={(e) => { e.stopPropagation(); toggleStar(subfolder.id); setMoreMenuItemKey(null); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"><span>{t('menu_starred')}</span><span className="text-xs text-gray-400">⌘+B</span></button>)}
+                                {effectivePerms.canDelete && (<button onClick={(e) => { e.stopPropagation(); openDeleteFolder(subfolder); }} className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"><span>{t('menu_delete')}</span><span className="text-xs text-gray-400">Del</span></button>)}
                               </div>
                             )}
                           </div>
@@ -1443,7 +1443,7 @@ export function GroupDetailView() {
                                   }}
                                   className={`w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm ${fileBlobUrls.has(file.id) ? 'text-gray-700' : 'text-gray-400 cursor-not-allowed'}`}
                                 >
-                                  Preview{!fileBlobUrls.has(file.id) && <span className="ml-auto text-xs text-gray-400">(upload again)</span>}
+                                  {t('menu_preview')}{!fileBlobUrls.has(file.id) && <span className="ml-auto text-xs text-gray-400">{t('menu_preview_unavailable')}</span>}
                                 </button>
                                 )}
                                 {effectivePerms.canEdit && (
@@ -1454,7 +1454,7 @@ export function GroupDetailView() {
                                   }}
                                   className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  Edit
+                                  {t('menu_edit')}
                                 </button>
                                 )}
                                 {effectivePerms.canEdit && (
@@ -1465,7 +1465,7 @@ export function GroupDetailView() {
                                   }}
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  <span>Rename</span>
+                                  <span>{t('menu_rename')}</span>
                                   <span className="text-xs text-gray-400">⌘+G</span>
                                 </button>
                                 )}
@@ -1478,7 +1478,7 @@ export function GroupDetailView() {
                                   }}
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  <span>Starred</span>
+                                  <span>{t('menu_starred')}</span>
                                   <span className="text-xs text-gray-400">⌘+B</span>
                                 </button>
                                 )}
@@ -1490,7 +1490,7 @@ export function GroupDetailView() {
                                   }}
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-red-600"
                                 >
-                                  <span>Delete</span>
+                                  <span>{t('menu_delete')}</span>
                                   <span className="text-xs text-gray-400">Del</span>
                                 </button>
                                 )}
@@ -1501,14 +1501,14 @@ export function GroupDetailView() {
                                   onClick={(event) => event.stopPropagation()}
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  <span>Move to</span>
+                                  <span>{t('menu_move_to')}</span>
                                   <span className="text-xs text-gray-400">⌘+X</span>
                                 </button>
                                 <button
                                   onClick={(event) => event.stopPropagation()}
                                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  <span>Copy to</span>
+                                  <span>{t('menu_copy_to')}</span>
                                   <span className="text-xs text-gray-400">⌘+C</span>
                                 </button>
                                 <div className="border-t border-gray-100 my-1" />
@@ -1516,7 +1516,7 @@ export function GroupDetailView() {
                                   onClick={(event) => event.stopPropagation()}
                                   className="w-full flex items-center px-4 py-2 hover:bg-gray-50 text-sm text-gray-700"
                                 >
-                                  Tag Management
+                                  {t('menu_tag_management')}
                                 </button>
                                 </>
                                 )}
@@ -1534,10 +1534,10 @@ export function GroupDetailView() {
             </div>
 
             <div className="pt-4 px-6 flex items-center justify-between text-sm text-gray-500">
-              <span>{currentFolder.folders.length + currentFolder.files.length} items</span>
+              <span>{t('footer_items', { n: currentFolder.folders.length + currentFolder.files.length })}</span>
               <div className="flex items-center gap-3">
                 <select className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-600">
-                  <option>20 / page</option>
+                  <option>{t('pagination_20_page')}</option>
                 </select>
                 <button className="text-gray-300">‹</button>
                 <button className="w-8 h-8 rounded bg-blue-600 text-white text-sm">1</button>
@@ -1554,7 +1554,7 @@ export function GroupDetailView() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <Upload className="w-5 h-5 text-green-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Upload File</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('modal_upload_title')}</h2>
               </div>
               <button
                 onClick={() => { setUploadFileModalOpen(false); setPendingUploadFiles([]); setUploadCaption(''); }}
@@ -1567,7 +1567,7 @@ export function GroupDetailView() {
             {/* File selector */}
             <div className="mb-4">
               <label className="text-sm font-medium text-gray-700 mb-2 block">
-                File <span className="text-red-500">*</span>
+                {t('label_file_required')} <span className="text-red-500">*</span>
               </label>
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -1580,12 +1580,12 @@ export function GroupDetailView() {
                       {pendingUploadFiles.map((f) => (
                         <p key={f.name} className="text-sm text-gray-800 font-medium truncate">{f.name}</p>
                       ))}
-                      <p className="text-xs text-gray-400 mt-0.5">{pendingUploadFiles.length} file{pendingUploadFiles.length > 1 ? 's' : ''} selected · click to change</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{pendingUploadFiles.length} file{pendingUploadFiles.length > 1 ? 's' : ''} {t('upload_selected_hint')}</p>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-sm text-gray-600 font-medium">Click to select file(s)</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Any file type supported</p>
+                      <p className="text-sm text-gray-600 font-medium">{t('upload_click_select')}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{t('upload_any_type')}</p>
                     </div>
                   )}
                 </div>
@@ -1596,12 +1596,12 @@ export function GroupDetailView() {
             {/* Caption field */}
             <div className="mb-6">
               <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Caption <span className="text-gray-400 font-normal">(optional)</span>
+                {t('label_caption')} <span className="text-gray-400 font-normal">{t('caption_optional')}</span>
               </label>
               <textarea
                 value={uploadCaption}
                 onChange={(e) => setUploadCaption(e.target.value.slice(0, 100))}
-                placeholder="Add a short description for this file..."
+                placeholder={t('placeholder_caption')}
                 rows={2}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
@@ -1615,14 +1615,14 @@ export function GroupDetailView() {
                 onClick={() => { setUploadFileModalOpen(false); setPendingUploadFiles([]); setUploadCaption(''); }}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmUpload}
                 disabled={pendingUploadFiles.length === 0}
                 className="px-5 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Upload
+                {t('btn_upload_confirm')}
               </button>
             </div>
           </div>
@@ -1635,7 +1635,7 @@ export function GroupDetailView() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-purple-600" />
-                <h2 className="text-lg font-semibold text-gray-900">New Group</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('modal_new_group_title')}</h2>
               </div>
               <button onClick={() => setNewGroupModalOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1658,13 +1658,13 @@ export function GroupDetailView() {
                 onClick={() => setNewGroupModalOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmNewGroup}
                 className="px-5 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm font-medium"
               >
-                OK
+                {t('btn_ok')}
               </button>
             </div>
           </div>
@@ -1675,7 +1675,7 @@ export function GroupDetailView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[480px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">New Folder</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('modal_new_folder_title')}</h2>
               <button onClick={() => setNewFolderModalOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1698,13 +1698,13 @@ export function GroupDetailView() {
                 onClick={() => setNewFolderModalOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmNewFolder}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                OK
+                {t('btn_ok')}
               </button>
             </div>
           </div>
@@ -1715,7 +1715,7 @@ export function GroupDetailView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[480px] p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-900">Rename</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('modal_rename_title')}</h2>
               <button onClick={() => setRenameTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1737,13 +1737,13 @@ export function GroupDetailView() {
                 onClick={() => setRenameTarget(null)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmRename}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                OK
+                {t('btn_ok')}
               </button>
             </div>
           </div>
@@ -1758,32 +1758,32 @@ export function GroupDetailView() {
                 <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
                   <AlertCircle className="w-5 h-5 text-orange-500" />
                 </div>
-                <h2 className="text-base font-semibold text-gray-900">Prompt</h2>
+                <h2 className="text-base font-semibold text-gray-900">{t('modal_delete_title')}</h2>
               </div>
               <button onClick={() => setDeleteTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
             <p className="text-gray-900 font-semibold mb-1 ml-12">
-              {`Sure you want to delete "${deleteTarget.name}"?`}
+              {t('delete_confirm', { name: deleteTarget.name })}
             </p>
             <p className="text-gray-500 text-sm mb-6 ml-12">
               {deleteTarget.kind === 'file'
-                ? 'The file will be moved to Mnemonic Recovery. You can retrieve it from Deletion Restore.'
-                : 'The folder and its files will be moved to Mnemonic Recovery. You can retrieve it from Deletion Restore.'}
+                ? t('delete_file_msg_recovery')
+                : t('delete_folder_msg_recovery')}
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setDeleteTarget(null)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={confirmDelete}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
               >
-                Confirm
+                {t('btn_confirm')}
               </button>
             </div>
           </div>
@@ -1794,7 +1794,7 @@ export function GroupDetailView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[400px] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">Folder Detail</h2>
+              <h2 className="text-base font-semibold text-gray-900">{t('modal_folder_detail_title')}</h2>
               <button onClick={() => setDetailsFolder(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1806,13 +1806,13 @@ export function GroupDetailView() {
             <div className="border-t border-gray-100 mb-4" />
             <div className="space-y-3 text-sm mb-6">
               {[
-                ['Creator', role === 'teacher' ? 'xiewenkai' : 'wangyifei'],
-                ['Location', 'Class/English 3A'],
-                ['Path', 'All/'],
-                ['Folder Size', '0B'],
-                ['Number of Files', String(detailsFolder.files.length || 0)],
-                ['Creation time', detailsFolder.createdAt],
-                ['Last modified', detailsFolder.createdAt],
+                [t('detail_label_creator'), role === 'teacher' ? 'xiewenkai' : 'wangyifei'],
+                [t('detail_label_location'), 'Class/English 3A'],
+                [t('detail_label_path'), 'All/'],
+                [t('detail_label_folder_size'), '0B'],
+                [t('detail_label_num_files'), String(detailsFolder.files.length || 0)],
+                [t('detail_label_creation_time'), detailsFolder.createdAt],
+                [t('detail_label_last_modified'), detailsFolder.createdAt],
               ].map(([label, value]) => (
                 <div key={label} className="flex gap-4">
                   <span className="text-gray-400 w-32 flex-shrink-0">{label}:</span>
@@ -1825,7 +1825,7 @@ export function GroupDetailView() {
                 onClick={() => setDetailsFolder(null)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Close
+                {t('btn_close')}
               </button>
             </div>
           </div>
@@ -1836,7 +1836,7 @@ export function GroupDetailView() {
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-xl w-[520px] p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">Share file/folder</h2>
+              <h2 className="text-base font-semibold text-gray-900">{t('modal_share_title')}</h2>
               <button onClick={() => setShareTarget(null)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -1844,7 +1844,7 @@ export function GroupDetailView() {
 
             <div className="flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2 mb-4">
               <AlertCircle className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-orange-600">Important or private files with care when sharing. Sharing on the internet must comply with relevant laws and regulations, and may incur legal responsibilities.</p>
+              <p className="text-xs text-orange-600">{t('share_warning')}</p>
             </div>
 
             <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3 mb-5">
@@ -1855,43 +1855,43 @@ export function GroupDetailView() {
               )}
               <div>
                 <div className="text-sm font-medium text-gray-900">{shareTarget.name}</div>
-                <div className="text-xs text-gray-400">{shareTarget.createdAt} created by {role === 'teacher' ? 'xiewenkai' : 'wangyifei'}</div>
+                <div className="text-xs text-gray-400">{shareTarget.createdAt} {t('share_created_by_label')} {role === 'teacher' ? 'xiewenkai' : 'wangyifei'}</div>
               </div>
             </div>
 
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Access permission</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('section_access_permission')}</p>
             <div className="space-y-2 mb-5">
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={sharePreview} onChange={(event) => setSharePreview(event.target.checked)} className="rounded" />
-                <span className="w-20">Preview</span>
-                <span className="text-gray-400 text-xs">Number of previews</span>
-                <input type="text" placeholder="please enter" className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
+                <span className="w-20">{t('share_preview')}</span>
+                <span className="text-gray-400 text-xs">{t('share_preview_count')}</span>
+                <input type="text" placeholder={t('placeholder_please_enter')} className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareDownload} onChange={(event) => setShareDownload(event.target.checked)} className="rounded" />
-                <span className="w-20">Download</span>
-                <span className="text-gray-400 text-xs">Number of downloads</span>
-                <input type="text" placeholder="please enter" className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
+                <span className="w-20">{t('share_download')}</span>
+                <span className="text-gray-400 text-xs">{t('share_download_count')}</span>
+                <input type="text" placeholder={t('placeholder_please_enter')} className="ml-auto border border-gray-300 rounded px-2 py-1 text-xs w-28" />
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareSave} onChange={(event) => setShareSave(event.target.checked)} className="rounded" />
-                <span>Save to Education Drive</span>
+                <span>{t('share_save_to_drive')}</span>
               </label>
               <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                 <input type="checkbox" checked={shareEdit} onChange={(event) => setShareEdit(event.target.checked)} className="rounded" />
-                <span>Edit (Login required)</span>
+                <span>{t('share_edit_login')}</span>
               </label>
             </div>
 
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Expiration date</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('section_expiry_date')}</p>
             <div className="flex items-center gap-4 mb-2">
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                 <input type="radio" checked={shareExpiry === 'expired'} onChange={() => setShareExpiry('expired')} />
-                Expired on
+                {t('radio_expired_on')}
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                 <input type="radio" checked={shareExpiry === 'permanent'} onChange={() => setShareExpiry('permanent')} />
-                Permanent validity
+                {t('radio_permanent')}
               </label>
             </div>
             {shareExpiry === 'expired' && (
@@ -1900,14 +1900,14 @@ export function GroupDetailView() {
                   <span>{shareExpiryDate}</span>
                   <Calendar className="w-4 h-4 text-gray-400" />
                 </div>
-                <span className="text-xs text-gray-400">Expired in 7 days</span>
+                <span className="text-xs text-gray-400">{t('expiry_7_days')}</span>
               </div>
             )}
 
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Security</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('section_security')}</p>
             <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer mb-5">
               <input type="checkbox" checked={shareUseCode} onChange={(event) => setShareUseCode(event.target.checked)} className="rounded" />
-              <span>Set extraction code</span>
+              <span>{t('checkbox_extraction_code')}</span>
               {shareUseCode && (
                 <input type="text" defaultValue={shareCode} className="border border-gray-300 rounded px-3 py-1 text-sm w-24 font-mono" />
               )}
@@ -1915,10 +1915,10 @@ export function GroupDetailView() {
 
             <div className="flex justify-end gap-2">
               <button onClick={() => setShareTarget(null)} className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm">
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                Create link
+                {t('btn_create_link_share')}
               </button>
             </div>
           </div>
@@ -1932,7 +1932,7 @@ export function GroupDetailView() {
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <Megaphone className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-semibold text-gray-900">New Announcement</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('modal_new_announcement_title')}</h2>
               </div>
               <button onClick={() => setNewAnnouncementOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1944,7 +1944,7 @@ export function GroupDetailView() {
                 onChange={(e) => setAnnouncementInput(e.target.value.slice(0, 500))}
                 onFocus={(e) => e.target.select()}
                 autoFocus
-                placeholder="Write your announcement here..."
+                placeholder={t('placeholder_announcement')}
                 rows={5}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
@@ -1957,7 +1957,7 @@ export function GroupDetailView() {
                 onClick={() => setNewAnnouncementOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Cancel
+                {t('btn_cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1972,7 +1972,7 @@ export function GroupDetailView() {
                 disabled={!announcementInput.trim()}
                 className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Post
+                {t('btn_post')}
               </button>
             </div>
           </div>
@@ -1986,7 +1986,7 @@ export function GroupDetailView() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <Megaphone className="w-5 h-5 text-blue-500" />
-                <h2 className="text-lg font-semibold text-gray-900">Past Announcements</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('modal_past_announcements_title')}</h2>
               </div>
               <button onClick={() => setPastAnnouncementsOpen(false)} className="p-1 hover:bg-gray-100 rounded">
                 <X className="w-5 h-5 text-gray-500" />
@@ -1994,7 +1994,7 @@ export function GroupDetailView() {
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {announcements.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-8">No announcements yet</p>
+                <p className="text-sm text-gray-400 text-center py-8">{t('empty_no_announcements')}</p>
               ) : (
                 <div className="relative pl-6">
                   {/* Timeline line */}
@@ -2011,7 +2011,7 @@ export function GroupDetailView() {
                           </div>
                           <p className="text-sm text-gray-800 whitespace-pre-wrap">{ann.text}</p>
                           {index === 0 && (
-                            <span className="inline-block mt-2 text-[10px] font-semibold uppercase tracking-wide text-blue-600 bg-blue-100 rounded px-1.5 py-0.5">Latest</span>
+                            <span className="inline-block mt-2 text-[10px] font-semibold uppercase tracking-wide text-blue-600 bg-blue-100 rounded px-1.5 py-0.5">{t('badge_latest')}</span>
                           )}
                         </div>
                       </div>
@@ -2025,7 +2025,7 @@ export function GroupDetailView() {
                 onClick={() => setPastAnnouncementsOpen(false)}
                 className="px-5 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
               >
-                Close
+                {t('btn_close')}
               </button>
             </div>
           </div>

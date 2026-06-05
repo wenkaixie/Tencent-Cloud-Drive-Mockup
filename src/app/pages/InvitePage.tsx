@@ -1,6 +1,7 @@
 import { Check, ChevronDown, Layers, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { createT, getStoredLanguage } from '../i18n';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface InviteData {
@@ -31,22 +32,22 @@ function EducationIcon() {
   );
 }
 
-function Header({ userEmail }: { userEmail?: string }) {
+function Header({ userEmail, t }: { userEmail?: string; t: (key: string, params?: Record<string, string | number>) => string }) {
   return (
     <header className="bg-white border-b border-gray-200 flex-shrink-0 z-10">
       <div className="px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <EducationIcon />
-          <span className="text-base font-bold text-gray-900 tracking-wide">Education Drive</span>
+          <span className="text-base font-bold text-gray-900 tracking-wide">{t('app_name')}</span>
         </div>
         <nav className="flex items-center gap-5">
-          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">Client Download</a>
+          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_client_download')}</a>
           <span className="text-gray-300 select-none">|</span>
-          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">TCED Website</a>
+          <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_tced_website')}</a>
           {!userEmail && (
             <>
               <span className="text-gray-300 select-none">|</span>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-600">Registration</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-600">{t('invite_registration')}</a>
             </>
           )}
           {userEmail ? (
@@ -59,7 +60,7 @@ function Header({ userEmail }: { userEmail?: string }) {
             </div>
           ) : (
             <button className="ml-2 px-5 py-1.5 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
-              Login
+              {t('invite_login')}
             </button>
           )}
           <button className="ml-1 px-2 py-1 text-xs border border-gray-300 rounded text-gray-500 hover:bg-gray-50">
@@ -80,18 +81,20 @@ const gridBg: React.CSSProperties = {
 
 // ─── Persona options (same as CollectionSubmitPage) ───────────────────────────
 const PERSONA_OPTIONS = [
-  { value: 'guest',   label: 'Guest' },
-  { value: 'teacher', label: 'Teacher — xiewenkai' },
-  { value: 'student', label: 'Student — wangyifei' },
+  { value: 'guest',   labelKey: 'persona_guest' },
+  { value: 'teacher', labelKey: 'persona_teacher' },
+  { value: 'student', labelKey: 'persona_student' },
 ];
 
 // ─── Login modal ──────────────────────────────────────────────────────────────
 function LoginModal({
   onVerify,
   onClose,
+  t,
 }: {
   onVerify: (email: string, persona: string) => void;
   onClose: () => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }) {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -113,16 +116,16 @@ function LoginModal({
         <div className="flex flex-col items-center mb-7">
           <div className="flex items-center gap-2 mb-5">
             <EducationIcon />
-            <span className="text-lg font-bold text-gray-900">Education Drive</span>
+            <span className="text-lg font-bold text-gray-900">{t('app_name')}</span>
           </div>
-          <h2 className="text-base font-semibold text-gray-800">Please verify your email address</h2>
+          <h2 className="text-base font-semibold text-gray-800">{t('invite_verify_email')}</h2>
         </div>
         {/* Email */}
         <input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          placeholder="Enter email address"
+          placeholder={t('invite_email_placeholder')}
           className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
         {/* Code row */}
@@ -131,7 +134,7 @@ function LoginModal({
             type="text"
             value={code}
             onChange={e => setCode(e.target.value)}
-            placeholder="Email code"
+            placeholder={t('invite_code_placeholder')}
             className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <button
@@ -145,7 +148,7 @@ function LoginModal({
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {codeSent ? 'Sent ✓' : 'Send'}
+            {codeSent ? t('invite_sent') : t('invite_send')}
           </button>
         </div>
         {/* Persona picker */}
@@ -156,7 +159,7 @@ function LoginModal({
             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
           >
             {PERSONA_OPTIONS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>{t(o.labelKey)}</option>
             ))}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -170,7 +173,7 @@ function LoginModal({
               onChange={e => setKeepLoggedIn(e.target.checked)}
               className="w-4 h-4 accent-blue-600"
             />
-            <span className="text-sm text-gray-600">Keep logged in for 1 day</span>
+            <span className="text-sm text-gray-600">{t('invite_keep_logged_in')}</span>
           </label>
           <label className="flex items-center gap-2.5 cursor-pointer">
             <input
@@ -182,10 +185,10 @@ function LoginModal({
             <span className="text-sm text-gray-600">
               Agree to{' '}
               <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>
-                《Privacy Policy》
+                {t('invite_privacy_policy')}
               </a>{' '}
               <a href="#" className="text-blue-600 hover:underline" onClick={e => e.stopPropagation()}>
-                《Terms of Service》
+                {t('invite_terms_of_service')}
               </a>
             </span>
           </label>
@@ -198,7 +201,7 @@ function LoginModal({
             canVerify ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-300 text-white cursor-not-allowed'
           }`}
         >
-          Verify
+          {t('invite_verify')}
         </button>
       </div>
     </div>
@@ -211,6 +214,7 @@ type View = 'login' | 'join' | 'success';
 export function InvitePage() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
+  const t = createT(getStoredLanguage());
 
   const invite = code ? loadInvite(code) : null;
 
@@ -242,7 +246,7 @@ export function InvitePage() {
   if (view === 'login') {
     return (
       <div className="min-h-screen flex flex-col" style={gridBg}>
-        <Header />
+        <Header t={t} />
         {/* Blurred background card */}
         <div className="flex-1 flex items-center justify-center py-16 px-4">
           {invite ? (
@@ -252,20 +256,21 @@ export function InvitePage() {
                   {invite.inviterName.slice(0, 2).toLowerCase()}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mb-1">{invite.inviterName} invite you to join</p>
+              <p className="text-sm text-gray-500 mb-1">{invite.inviterName} {t('invite_to_join')}</p>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">{invite.groupName}</h2>
-              <p className="text-sm text-gray-400">{invite.expiryDate} Expired</p>
+              <p className="text-sm text-gray-400">{invite.expiryDate} {t('invite_expired')}</p>
             </div>
           ) : (
             <div className="bg-white rounded-2xl shadow-xl px-10 py-12 w-full max-w-sm flex flex-col items-center text-center">
               <div className="text-4xl mb-4">🔗</div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">Invitation not found</h2>
-              <p className="text-sm text-gray-500">This invitation link may have expired or been removed.</p>
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">{t('invite_not_found')}</h2>
+              <p className="text-sm text-gray-500">{t('invite_not_found_msg')}</p>
             </div>
           )}
         </div>
         {invite && (
           <LoginModal
+            t={t}
             onVerify={handleVerify}
             onClose={() => {/* keep open for demo */}}
           />
@@ -278,7 +283,7 @@ export function InvitePage() {
   if (view === 'join') {
     return (
       <div className="min-h-screen flex flex-col" style={gridBg}>
-        <Header userEmail={userEmail} />
+        <Header userEmail={userEmail} t={t} />
         <div className="flex-1 flex items-center justify-center py-16 px-4">
           <div className="bg-white rounded-2xl shadow-xl px-10 py-10 w-full max-w-md flex flex-col items-center text-center">
             {/* Inviter avatar */}
@@ -288,15 +293,15 @@ export function InvitePage() {
               </span>
             </div>
             <p className="text-sm text-gray-500 mb-1">
-              {invite?.inviterName ?? ''} invite you to join
+              {invite?.inviterName ?? ''} {t('invite_to_join')}
             </p>
             <h2 className="text-2xl font-bold text-gray-900 mb-3">{invite?.groupName ?? ''}</h2>
-            <p className="text-sm text-gray-400 mb-8">{invite?.expiryDate ?? ''} Expired</p>
+            <p className="text-sm text-gray-400 mb-8">{invite?.expiryDate ?? ''} {t('invite_expired')}</p>
             <button
               onClick={handleJoin}
               className="w-full py-3 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
             >
-              Join Now
+              {t('invite_join_now')}
             </button>
           </div>
         </div>
@@ -307,7 +312,7 @@ export function InvitePage() {
   // ── Success view ─────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col" style={gridBg}>
-      <Header userEmail={userEmail} />
+      <Header userEmail={userEmail} t={t} />
       <div className="flex-1 flex items-center justify-center py-16 px-4">
         <div className="bg-white rounded-2xl shadow-xl px-10 py-12 w-full max-w-md flex flex-col items-center text-center">
           {/* Tick icon */}
@@ -315,12 +320,12 @@ export function InvitePage() {
             <Check className="w-10 h-10 text-green-500 stroke-[2.5]" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-3">{invite?.groupName ?? ''}</h2>
-          <p className="text-blue-600 text-sm mb-8">You have joined the current Group</p>
+          <p className="text-blue-600 text-sm mb-8">{t('invite_already_joined')}</p>
           <button
             onClick={handleOpenTced}
             className="w-full py-3 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
           >
-            Open TCED
+            {t('invite_open_tced')}
           </button>
         </div>
       </div>

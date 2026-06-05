@@ -15,7 +15,7 @@ import { useRole } from '../context/RoleContext';
 import { computeGroupStorageBytes, formatStorageUsed } from './UpgradeModal';
 
 export function Sidebar() {
-  const { role, basePath } = useRole();
+  const { role, basePath, t } = useRole();
 
   // Compute live storage totals for the teacher badge
   const personalStorageBytes = (() => {
@@ -38,7 +38,7 @@ export function Sidebar() {
         <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
           <Layers className="w-5 h-5 text-white" />
         </div>
-        <span className="font-semibold text-gray-900">Education Drive</span>
+        <span className="font-semibold text-gray-900">{t('app_name')}</span>
       </div>
 
       <div className="flex-1 overflow-y-auto py-2">
@@ -54,24 +54,24 @@ export function Sidebar() {
             }
           >
             <Layers className="w-4 h-4" />
-            <span>Workbench</span>
+            <span>{t('nav_workbench')}</span>
           </NavLink>
         </div>
 
         <div className="px-3 mb-1">
-          <div className="text-xs text-gray-500 px-3 mb-2">Storage Space</div>
+          <div className="text-xs text-gray-500 px-3 mb-2">{t('nav_section_storage')}</div>
         </div>
 
         <div className="px-3 mb-4">
           <button className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100">
             <div className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
-              <span>Education</span>
+              <span>{t('nav_education')}</span>
             </div>
             <ChevronDown className="w-4 h-4" />
           </button>
           <div className="ml-9 mt-1">
-            <div className="text-sm text-gray-600 px-3 py-1">我的学校 Tencent</div>
+            <div className="text-sm text-gray-600 px-3 py-1">{t('nav_my_school')}</div>
           </div>
         </div>
 
@@ -87,7 +87,7 @@ export function Sidebar() {
             }
           >
             <Users className="w-4 h-4" />
-            <span>Class</span>
+            <span>{t('nav_class')}</span>
           </NavLink>
         </div>
 
@@ -103,12 +103,12 @@ export function Sidebar() {
             }
           >
             <User className="w-4 h-4" />
-            <span>Personal</span>
+            <span>{t('nav_personal')}</span>
           </NavLink>
         </div>
 
         <div className="px-3 mb-1">
-          <div className="text-xs text-gray-500 px-3 mb-2">File Management</div>
+          <div className="text-xs text-gray-500 px-3 mb-2">{t('nav_section_file_management')}</div>
         </div>
 
         <div className="px-3 space-y-1">
@@ -123,7 +123,7 @@ export function Sidebar() {
             }
           >
             <Share2 className="w-4 h-4" />
-            <span>Shared With Me</span>
+            <span>{t('nav_shared_with_me')}</span>
           </NavLink>
 
           <NavLink
@@ -137,7 +137,7 @@ export function Sidebar() {
             }
           >
             <Link className="w-4 h-4" />
-            <span>Shared Links</span>
+            <span>{t('nav_shared_links')}</span>
           </NavLink>
 
           <NavLink
@@ -151,7 +151,7 @@ export function Sidebar() {
             }
           >
             <Trash2 className="w-4 h-4" />
-            <span>Deletion Restore</span>
+            <span>{t('nav_deletion_restore')}</span>
           </NavLink>
 
           <NavLink
@@ -165,7 +165,7 @@ export function Sidebar() {
             }
           >
             <AlertTriangle className="w-4 h-4" />
-            <span>Suspicious File</span>
+            <span>{t('nav_suspicious_file')}</span>
           </NavLink>
         </div>
       </div>
@@ -180,8 +180,8 @@ export function Sidebar() {
             <div className="text-xs text-gray-500 truncate">{role === 'teacher' ? 'xiewenkai@tencentschool.com' : 'wangyifei@tencentschool.com'}</div>
             {role === 'teacher' && (
               <>
-                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(groupStorageBytes)}/10 GB (Group)</div>
-                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(personalStorageBytes)}/10 GB (Personal)</div>
+                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(groupStorageBytes)}{t('storage_group_suffix')}</div>
+                <div className="text-xs text-gray-400 whitespace-nowrap">{formatStorageUsed(personalStorageBytes)}{t('storage_personal_suffix')}</div>
               </>
             )}
           </div>
