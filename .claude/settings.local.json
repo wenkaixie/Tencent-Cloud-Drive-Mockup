@@ -18,7 +18,9 @@
       "Bash(sed -i '' '300s/》《Terms of Service》/{t\\('\\\\''invite_terms_of_service'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
       "Bash(perl -i -pe 's/\\\\x{300a}Privacy Policy\\\\x{300b}/{t\\('\\\\''invite_privacy_policy'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
       "Bash(perl -i -pe 's/\\\\x{300a}Terms of Service\\\\x{300b}/{t\\('\\\\''invite_terms_of_service'\\\\''\\)}/' src/app/pages/CollectionSubmitPage.tsx)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(cat)",
+      "Read(//tmp/**)"
     ]
   }
 }

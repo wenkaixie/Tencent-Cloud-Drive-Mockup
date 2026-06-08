@@ -19,6 +19,14 @@
 
   The target experience draws inspiration from Google Classroom's core features: class-based organisation, file sharing within classes, and simple member (student/teacher) management.
 
+  ## Defaults
+
+  | Setting | Default | Alternative |
+  |---|---|---|
+  | Language | Chinese (中文) | English (toggle in top bar) |
+  | Landing page | Class (群组/班级列表) | Workbench (via sidebar navigation) |
+  | Member roles | Teacher, Student | — |
+
   ## Running the code
 
   Run `npm install` to install the dependencies.

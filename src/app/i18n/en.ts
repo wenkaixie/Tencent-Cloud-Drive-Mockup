@@ -186,7 +186,6 @@ export const en = {
   // GroupListView — roles
   role_teacher: 'Teacher',
   role_student: 'Student',
-  role_parent: 'Parent',
   role_viewer: 'Viewer',
   role_previewer: 'Previewer',
   role_downloader: 'Downloader',
@@ -195,7 +194,6 @@ export const en = {
   role_editor: 'Editor',
   role_desc_teacher: 'Full access: edit, delete, share',
   role_desc_student: 'List + preview + download + print',
-  role_desc_parent: 'List + preview + download + print',
   role_desc_viewer: 'List file/folder names only',
   role_desc_previewer: 'List + online preview',
   role_desc_downloader: 'List + preview + download + print',

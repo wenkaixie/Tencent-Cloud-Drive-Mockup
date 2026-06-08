@@ -14,7 +14,7 @@ import { CollectionSubmitPage } from './pages/CollectionSubmitPage';
 import { InvitePage } from './pages/InvitePage';
 
 const roleChildren = [
-  { index: true, Component: WorkbenchPage },
+  { index: true, Component: GroupPage },
   { path: 'workbench', Component: WorkbenchPage },
   { path: 'group', Component: GroupPage },
   { path: 'group/:groupId', Component: GroupDetailPage },

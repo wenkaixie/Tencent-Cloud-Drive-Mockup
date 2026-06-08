@@ -188,7 +188,6 @@ export const zh: Record<TranslationKey, string> = {
   // GroupListView — roles
   role_teacher: '教师',
   role_student: '学生',
-  role_parent: '家长',
   role_viewer: '查看者',
   role_previewer: '预览者',
   role_downloader: '下载者',
@@ -197,7 +196,6 @@ export const zh: Record<TranslationKey, string> = {
   role_editor: '编辑者',
   role_desc_teacher: '完全权限：编辑、删除、分享',
   role_desc_student: '列表 + 预览 + 下载 + 打印',
-  role_desc_parent: '列表 + 预览 + 下载 + 打印',
   role_desc_viewer: '仅查看文件/文件夹名称',
   role_desc_previewer: '列表 + 在线预览',
   role_desc_downloader: '列表 + 预览 + 下载 + 打印',

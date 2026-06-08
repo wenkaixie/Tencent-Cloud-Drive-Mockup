@@ -7,7 +7,7 @@ const LANG_KEY = 'app:language';
 
 export function getStoredLanguage(): Language {
   const stored = localStorage.getItem(LANG_KEY);
-  return stored === 'zh' ? 'zh' : 'en';
+  return stored === 'en' ? 'en' : 'zh';
 }
 
 export function setStoredLanguage(lang: Language): void {

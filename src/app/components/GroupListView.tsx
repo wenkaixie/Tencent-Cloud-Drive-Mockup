@@ -7,7 +7,7 @@ import { UpgradeModal, type UpgradeReason } from './UpgradeModal';
 const MAX_TEACHER_GROUPS = 6;
 
 // ─── Role definitions ─────────────────────────────────────────────────────────
-export type MemberRole = 'Viewer' | 'Previewer' | 'Downloader' | 'Uploader' | 'Editor' | 'Transmitter' | 'Teacher' | 'Student' | 'Parent';
+export type MemberRole = 'Viewer' | 'Previewer' | 'Downloader' | 'Uploader' | 'Editor' | 'Transmitter' | 'Teacher' | 'Student';
 
 export interface GroupMember {
   username: string;
@@ -20,7 +20,6 @@ export interface GroupMember {
 export const ROLE_OPTIONS: { value: MemberRole; label: string; sub: string; description: string }[] = [
   { value: 'Teacher',     label: 'Teacher',     sub: '老师',            description: 'Full access: edit, delete, share' },
   { value: 'Student',     label: 'Student',     sub: '学生',            description: 'List + preview + download + print' },
-  { value: 'Parent',      label: 'Parent',      sub: '家长',            description: 'List + preview + download + print' },
   { value: 'Viewer',      label: 'Viewer',      sub: '查看者',          description: 'List file/folder names only' },
   { value: 'Previewer',   label: 'Previewer',   sub: '预览者',          description: 'List + online preview' },
   { value: 'Downloader',  label: 'Downloader',  sub: '下载者',          description: 'List + preview + download + print' },
@@ -29,7 +28,7 @@ export const ROLE_OPTIONS: { value: MemberRole; label: string; sub: string; desc
   { value: 'Editor',      label: 'Editor',      sub: '编辑者',          description: 'Full access: edit, delete, share' },
 ];
 
-const DEMO_PRIMARY_ROLE_SET = new Set<MemberRole>(['Teacher', 'Student', 'Parent']);
+const DEMO_PRIMARY_ROLE_SET = new Set<MemberRole>(['Teacher', 'Student']);
 
 // ─── Permission helpers ────────────────────────────────────────────────────────
 export const ROLE_PERMISSIONS: Record<MemberRole, { canList: boolean; canPreview: boolean; canDownload: boolean; canPrint: boolean; canUpload: boolean; canDelete: boolean; canEdit: boolean; canShare: boolean }> = {
@@ -41,7 +40,6 @@ export const ROLE_PERMISSIONS: Record<MemberRole, { canList: boolean; canPreview
   Editor:      { canList: true,  canPreview: true,  canDownload: true,  canPrint: true,  canUpload: true,  canDelete: true,  canEdit: true,  canShare: true  },
   Teacher:     { canList: true,  canPreview: true,  canDownload: true,  canPrint: true,  canUpload: true,  canDelete: true,  canEdit: true,  canShare: true  },
   Student:     { canList: true,  canPreview: true,  canDownload: true,  canPrint: true,  canUpload: false, canDelete: false, canEdit: false, canShare: false },
-  Parent:      { canList: true,  canPreview: true,  canDownload: true,  canPrint: true,  canUpload: false, canDelete: false, canEdit: false, canShare: false },
 };
 
 function normalizeDemoMemberRoles(members: GroupMember[]) {
@@ -373,15 +371,15 @@ export function GroupListView() {
 
   // Check if current user can invite/manage members for a given group.
   // This is based on the user's role WITHIN that group, not the global /teacher or /student route.
-  // Group owners can always invite. Users with Student/Parent role (downloader-level) cannot.
+  // Group owners can always invite. Users with Student role (downloader-level) cannot.
   function canUserInviteInGroup(groupId: string): boolean {
     const group = groups.find(g => g.id === groupId);
     if (!group) return false;
     const member = group.members.find(m => m.username === currentUsername);
     if (!member) return false;
     if (member.isOwner) return true;
-    // Student and Parent map to downloader-level permissions — cannot invite
-    const NON_INVITE_ROLES: Set<MemberRole> = new Set(['Student', 'Parent', 'Viewer', 'Previewer', 'Downloader']);
+    // Student maps to downloader-level permissions — cannot invite
+    const NON_INVITE_ROLES: Set<MemberRole> = new Set(['Student', 'Viewer', 'Previewer', 'Downloader']);
     return !NON_INVITE_ROLES.has(member.role);
   }
 
